@@ -1,0 +1,4 @@
+# feedback plugin fails to load on EL7
+plugins.feedback_plugin_load                    : 
+plugins.feedback_plugin_send                    :
+plugins.feedback_plugin_install                 :

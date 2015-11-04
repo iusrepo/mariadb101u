@@ -148,6 +148,7 @@ Source19:         mysql.init.in
 Source50:         rh-skipped-tests-base.list
 Source51:         rh-skipped-tests-arm.list
 Source52:         rh-skipped-tests-ppc-s390.list
+Source53:         rh-skipped-tests-el7.list
 
 # Comments for these patches are in the patch files
 # Patches common for more mysql-like packages
@@ -592,6 +593,11 @@ cat %{SOURCE51} | tee -a mysql-test/rh-skipped-tests.list
 
 %ifarch ppc ppc64 ppc64p7 s390 s390x
 cat %{SOURCE52} | tee -a mysql-test/rh-skipped-tests.list
+%endif
+
+# these tests fail on EL7
+%if 0%{?rhel} == 7
+cat %{SOURCE53} | tee -a mysql-test/rh-skipped-tests.list
 %endif
 
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
@@ -1241,6 +1247,7 @@ fi
 %changelog
 * Wed Nov 04 2015 Carl George <carl.george@rackspace.com> - 1:10.1.8-1.ius
 - Port from Fedora to IUS
+- Skip feedback plugin tests on EL7
 
 * Tue Nov 03 2015 Honza Horak <hhorak@redhat.com> - 1:10.1.8-2
 - Expand variables in server.cnf
