@@ -268,7 +268,7 @@ package itself.
 %package          common
 Summary:          The shared files required by server and client
 Group:            Applications/Databases
-Requires:         %{_sysconfdir}/my.cnf
+Requires:         %{name}-config = %{sameevr}
 
 %description      common
 The package provides the essential shared files for any MariaDB program.
