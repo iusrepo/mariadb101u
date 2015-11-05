@@ -118,7 +118,7 @@
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          1.ius%{?dist}
+Release:          2.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -330,8 +330,7 @@ Requires:         mysql%{?_isa}
 Requires:         %{name}%{?_isa}
 %endif
 Requires:         %{name}-common%{?_isa} = %{sameevr}
-Requires:         %{_sysconfdir}/my.cnf
-Requires:         %{_sysconfdir}/my.cnf.d
+Requires:         %{name}-config%{?_isa} = %{sameevr}
 Requires:         %{name}-errmsg%{?_isa} = %{sameevr}
 Requires:         sh-utils
 Requires(pre):    /usr/sbin/useradd
@@ -1245,6 +1244,9 @@ fi
 %endif
 
 %changelog
+* Thu Nov 05 2015 Carl George <carl.george@rackspace.com> - 1:10.1.8-2.ius
+- Help with dep resolution by making -server explicitly require -config
+
 * Wed Nov 04 2015 Carl George <carl.george@rackspace.com> - 1:10.1.8-1.ius
 - Port from Fedora to IUS
 - Skip feedback plugin tests on EL7
