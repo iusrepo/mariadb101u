@@ -329,6 +329,7 @@ Requires:         mysql%{?_isa}
 %else
 Requires:         %{name}%{?_isa}
 %endif
+Requires:         %{name}-libs%{?_isa} = %{sameevr}
 Requires:         %{name}-common%{?_isa} = %{sameevr}
 Requires:         %{name}-config%{?_isa} = %{sameevr}
 Requires:         %{name}-errmsg%{?_isa} = %{sameevr}
@@ -1245,7 +1246,7 @@ fi
 
 %changelog
 * Thu Nov 05 2015 Carl George <carl.george@rackspace.com> - 1:10.1.8-2.ius
-- Help with dep resolution by making -server explicitly require -config
+- Make -server explicitly require -libs and -config
 
 * Wed Nov 04 2015 Carl George <carl.george@rackspace.com> - 1:10.1.8-1.ius
 - Port from Fedora to IUS
