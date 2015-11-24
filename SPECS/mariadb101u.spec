@@ -112,13 +112,13 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 8
+%global bugfixver 9
 
 %global ius_suffix 101u
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          2.ius%{?dist}
+Release:          1.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -1245,6 +1245,9 @@ fi
 %endif
 
 %changelog
+* Tue Nov 24 2015 Ben Harper <ben.harper@rackspace.com> - 1:10.1.9-1.ius
+- Update to 10.1.9
+
 * Thu Nov 05 2015 Carl George <carl.george@rackspace.com> - 1:10.1.8-2.ius
 - Make -server explicitly require -libs and -config
 
