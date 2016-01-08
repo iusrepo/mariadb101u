@@ -107,6 +107,7 @@
 
 # Provide mysql names for compatibility
 %bcond_without mysql_names
+%bcond_with mysql-server_name
 %bcond_without conflicts
 
 # Make long macros shorter
@@ -118,7 +119,7 @@
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          1.ius%{?dist}
+Release:          2.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -346,9 +347,11 @@ Requires(posttrans): systemd
 # mysqlhotcopy needs DBI/DBD support
 Requires:         perl(DBI)
 Requires:         perl(DBD::mysql)
-%if %{with mysql_names}
+%if %{with mysql-server_name}
 Provides:         mysql-server = %{sameevr}
 Provides:         mysql-server%{?_isa} = %{sameevr}
+%endif
+%if %{with mysql_names}
 Provides:         mysql-compat-server = %{sameevr}
 Provides:         mysql-compat-server%{?_isa} = %{sameevr}
 %endif
@@ -1245,6 +1248,9 @@ fi
 %endif
 
 %changelog
+* Fri Jan 08 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.9-1.ius
+- provide mysql-compat-server and not mysql-server
+
 * Tue Nov 24 2015 Ben Harper <ben.harper@rackspace.com> - 1:10.1.9-1.ius
 - Update to 10.1.9
 
