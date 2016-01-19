@@ -113,13 +113,13 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 9
+%global bugfixver 10
 
 %global ius_suffix 101u
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          2.ius%{?dist}
+Release:          1.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -155,7 +155,6 @@ Source53:         rh-skipped-tests-el7.list
 # Patches common for more mysql-like packages
 Patch1:           %{pkgnamepatch}-strmov.patch
 Patch2:           %{pkgnamepatch}-install-test.patch
-Patch3:           %{pkgnamepatch}-s390-tsc.patch
 Patch4:           %{pkgnamepatch}-logrotate.patch
 Patch5:           %{pkgnamepatch}-file-contents.patch
 Patch7:           %{pkgnamepatch}-scripts.patch
@@ -563,7 +562,6 @@ MariaDB is a community developed branch of MySQL.
 
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch7 -p1
@@ -1248,6 +1246,10 @@ fi
 %endif
 
 %changelog
+* Mon Jan 18 2016 Ben Harper <ben.harper@rackspace.com> -  1:10.1.10-1.ius
+- Update to 10.1.10
+- remove Patch3, patched upstream https://mariadb.atlassian.net/browse/MDEV-9172
+
 * Fri Jan 08 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.9-1.ius
 - provide mysql-compat-server and not mysql-server
 
