@@ -1,6 +1,6 @@
---- mariadb-10.1.8/scripts/CMakeLists.txt.systemd	2015-10-15 17:43:45.000000000 +0200
-+++ mariadb-10.1.8/scripts/CMakeLists.txt	2015-10-21 17:39:41.179737915 +0200
-@@ -323,6 +323,33 @@ ELSE()
+--- mariadb-10.1.11/scripts/CMakeLists.txt	2016-01-28 12:12:51.000000000 +0000
++++ mariadb-10.1.11/scripts/CMakeLists.txt.patch	2016-02-01 19:13:31.115000000 +0000
+@@ -320,6 +320,33 @@
        COMPONENT ${${file}_COMPONENT}
       )
    ENDFOREACH()
@@ -33,4 +33,4 @@
 +  ENDFOREACH()
  ENDIF()
  
- # Install libgcc as  mylibgcc.a
+ # Configure two scripts from one 'in' file.

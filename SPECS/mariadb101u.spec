@@ -113,7 +113,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 10
+%global bugfixver 11
 
 %global ius_suffix 101u
 
@@ -157,7 +157,8 @@ Patch1:           %{pkgnamepatch}-strmov.patch
 Patch2:           %{pkgnamepatch}-install-test.patch
 Patch4:           %{pkgnamepatch}-logrotate.patch
 Patch5:           %{pkgnamepatch}-file-contents.patch
-Patch7:           %{pkgnamepatch}-scripts.patch
+#Patch7:           %{pkgnamepatch}-scripts.patch
+Patch7:           patch
 Patch8:           %{pkgnamepatch}-install-db-sharedir.patch
 Patch9:           %{pkgnamepatch}-ownsetup.patch
 Patch12:          %{pkgnamepatch}-admincrash.patch
@@ -892,6 +893,10 @@ rm -rf %{buildroot}%{_datadir}/mysql-test
 rm -f %{buildroot}%{_mandir}/man1/mysql_client_test.1*
 %endif
 
+# random file in /usr/bin that already is in usr/share
+rm -f %{buildroot}%{_bindir}/maria_add_gis_sp.sql
+
+
 %check
 %if %{with test}
 %if %runselftest
@@ -1110,6 +1115,7 @@ fi
 %{?with_tokudb:%{_bindir}/tokuft_logprint}
 
 %config(noreplace) %{_sysconfdir}/my.cnf.d/%{pkg_name}-server.cnf
+%config(noreplace) %{_sysconfdir}/my.cnf.d/auth_gssapi.cnf
 %{?with_tokudb:%config(noreplace) %{_sysconfdir}/my.cnf.d/tokudb.cnf}
 
 %{_libexecdir}/mysqld
@@ -1246,6 +1252,10 @@ fi
 %endif
 
 %changelog
+* Mon Feb 01 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.11-1.ius
+- Update to 10.1.11
+- update Patch7, add auth_gssapi.cnf  and delete /usr/bin/maria_add_gis_sp.sql
+
 * Mon Jan 18 2016 Ben Harper <ben.harper@rackspace.com> -  1:10.1.10-1.ius
 - Update to 10.1.10
 - remove Patch3, patched upstream https://mariadb.atlassian.net/browse/MDEV-9172
