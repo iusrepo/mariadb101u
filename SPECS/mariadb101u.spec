@@ -119,7 +119,7 @@
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          1.ius%{?dist}
+Release:          2.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -145,6 +145,7 @@ Source14:         mysql-check-socket.sh
 Source15:         mysql-scripts-common.sh
 Source16:         mysql-check-upgrade.sh
 Source17:         mysql-wait-stop.sh
+Source18:         mysql@.service.in
 Source19:         mysql.init.in
 Source50:         rh-skipped-tests-base.list
 Source51:         rh-skipped-tests-arm.list
@@ -172,9 +173,15 @@ Patch37:          %{pkgnamepatch}-notestdb.patch
 
 BuildRequires:    cmake
 BuildRequires:    libaio-devel
+BuildRequires:    libedit-devel
 BuildRequires:    openssl-devel
 BuildRequires:    ncurses-devel
 BuildRequires:    perl
+# wsrep requirements
+Requires:         lsof
+Requires:         net-tools
+Requires:         sh-utils
+Requires:         rsync
 BuildRequires:    systemtap-sdt-devel
 BuildRequires:    zlib-devel
 # auth_pam.so plugin will be build if pam-devel is installed
@@ -197,7 +204,7 @@ BuildRequires:    perl(Test::More)
 BuildRequires:    perl(Time::HiRes)
 # for running some openssl tests rhbz#1189180
 BuildRequires:    openssl
-%{?with_init_systemd:BuildRequires: systemd}
+%{?with_init_systemd:BuildRequires: systemd systemd-devel}
 
 Requires:         bash
 Requires:         fileutils
@@ -575,10 +582,6 @@ MariaDB is a community developed branch of MySQL.
 %patch36 -p1
 %patch37 -p1
 
-# removing bundled cmd-line-utils is now disabled
-# we cannot use libedit due #1201988
-# rm -r cmd-line-utils
-
 sed -i -e 's/2.8.7/2.6.4/g' cmake/cpack_rpm.cmake
 
 # workaround for upstream bug #56342
@@ -602,8 +605,10 @@ cat %{SOURCE53} | tee -a mysql-test/rh-skipped-tests.list
 %endif
 
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
-   %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE17} %{SOURCE19} \
+   %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE17} %{SOURCE18} %{SOURCE19} \
    scripts
+
+
 
 %build
 
@@ -646,7 +651,6 @@ export LDFLAGS
 %cmake . \
          -DBUILD_CONFIG=mysql_release \
          -DFEATURE_SET="community" \
-         -DWITH_READLINE=ON \
          -DINSTALL_LAYOUT=RPM \
          -DDAEMON_NAME="%{daemon_name}" \
          -DDAEMON_NO_PREFIX="%{daemon_no_prefix}" \
@@ -755,6 +759,10 @@ mv %{buildroot}%{_sysconfdir}/my.cnf.d/server.cnf %{buildroot}%{_sysconfdir}/my.
 # install systemd unit files and scripts for handling server startup
 %if %{with init_systemd}
 install -D -p -m 644 scripts/mysql.service %{buildroot}%{_unitdir}/%{daemon_name}.service
+install -D -p -m 644 scripts/mysql@.service %{buildroot}%{_unitdir}/%{daemon_name}@.service
+install -D -p -m 644 scripts/mysql@.service %{buildroot}%{_datadir}/%{pkg_name}/systemd/%{daemon_name}@.service
+mkdir -p %{buildroot}%{_unitdir}/mariadb@bootstrap.service.d
+install -D -p -m 644 %{buildroot}%{_datadir}/%{pkg_name}/systemd/use_galera_new_cluster.conf %{buildroot}%{_unitdir}/mariadb@bootstrap.service.d/use_galera_new_cluster.conf
 install -D -p -m 0644 scripts/mysql.tmpfiles.d %{buildroot}%{_tmpfilesdir}/%{daemon_name}.conf
 %if 0%{?mysqld_pid_dir:1}
 echo "d %{_localstatedir}/run/%{mysqld_pid_dir} 0755 mysql mysql -" >>%{buildroot}%{_tmpfilesdir}/%{daemon_name}.conf
@@ -1082,6 +1090,8 @@ fi
 %{_bindir}/aria_ftdump
 %{_bindir}/aria_pack
 %{_bindir}/aria_read_log
+%{_bindir}/galera_new_cluster
+%{_bindir}/mariadb-service-convert
 %{_bindir}/myisamchk
 %{_bindir}/myisam_ftdump
 %{_bindir}/myisamlog
@@ -1182,6 +1192,10 @@ fi
 %{_datadir}/%{pkg_name}/policy/apparmor/usr.sbin.mysqld*
 %{_datadir}/%{pkg_name}/policy/selinux/README
 %{_datadir}/%{pkg_name}/policy/selinux/mariadb-server.*
+%{_datadir}/%{pkg_name}/systemd/mariadb.service
+%{_datadir}/%{pkg_name}/systemd/mariadb@.service
+%{_datadir}/%{pkg_name}/systemd/use_galera_new_cluster.conf
+
 
 %{daemondir}/%{daemon_name}*
 %{_libexecdir}/mysql-prepare-db-dir
@@ -1251,6 +1265,13 @@ fi
 %endif
 
 %changelog
+* Tue Feb 09 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.11-2.ius
+- update systemd files, add requirements and re-enable libedit  to align with Fedora
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=35f670f8ce3c6cd6380cf0e8e0842818eb7079d8
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=a97ddad354d78d9a2ec7bfa2b54a5baba5b4adbd
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=f7a17ba600d9d9c8f447c351e7fb14f644098947
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=2caa773538c1d27e10cb86e15d76c39c20339cf9
+
 * Mon Feb 01 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.11-1.ius
 - Update to 10.1.11
 - update Patch7, add auth_gssapi.cnf  and delete /usr/bin/maria_add_gis_sp.sql
