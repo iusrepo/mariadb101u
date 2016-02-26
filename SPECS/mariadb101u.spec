@@ -113,13 +113,13 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 11
+%global bugfixver 12
 
 %global ius_suffix 101u
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          2.ius%{?dist}
+Release:          1.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -1265,6 +1265,9 @@ fi
 %endif
 
 %changelog
+* Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
+- Update to 10.1.12
+
 * Tue Feb 09 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.11-2.ius
 - update systemd files, add requirements and re-enable libedit  to align with Fedora
   http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=35f670f8ce3c6cd6380cf0e8e0842818eb7079d8
