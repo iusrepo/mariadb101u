@@ -606,7 +606,7 @@ cat %{SOURCE52} | tee -a mysql-test/rh-skipped-tests.list
 cat %{SOURCE53} | tee -a mysql-test/rh-skipped-tests.list
 %endif
 
-cat %{SOURCE100} | tee mysql-test/rh-skipped-tests.list
+cat %{SOURCE100} | tee -a mysql-test/rh-skipped-tests.list
 
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE17} %{SOURCE18} %{SOURCE19} \
