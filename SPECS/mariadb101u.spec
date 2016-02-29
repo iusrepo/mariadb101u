@@ -152,6 +152,8 @@ Source51:         rh-skipped-tests-arm.list
 Source52:         rh-skipped-tests-ppc-s390.list
 Source53:         rh-skipped-tests-el7.list
 
+Source100:        ius-skipped-tests.list
+
 # Comments for these patches are in the patch files
 # Patches common for more mysql-like packages
 Patch1:           %{pkgnamepatch}-strmov.patch
@@ -603,6 +605,8 @@ cat %{SOURCE52} | tee -a mysql-test/rh-skipped-tests.list
 %if 0%{?rhel} == 7
 cat %{SOURCE53} | tee -a mysql-test/rh-skipped-tests.list
 %endif
+
+cat %{SOURCE100} | tee mysql-test/rh-skipped-tests.list
 
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE17} %{SOURCE18} %{SOURCE19} \
@@ -1267,6 +1271,7 @@ fi
 %changelog
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
+- Add Source100
 
 * Tue Feb 09 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.11-2.ius
 - update systemd files, add requirements and re-enable libedit  to align with Fedora
