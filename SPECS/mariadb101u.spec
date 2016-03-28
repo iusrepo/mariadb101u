@@ -291,7 +291,7 @@ package itself.
 %package          common
 Summary:          The shared files required by server and client
 Group:            Applications/Databases
-Requires:         %{name}-config = %{sameevr}
+Requires:         %{name}-config%{?_isa} = %{sameevr}
 
 # IUS things
 Provides:         %{pkg_name}-common = %{sameevr}
