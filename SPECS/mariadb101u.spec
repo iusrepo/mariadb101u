@@ -178,11 +178,6 @@ BuildRequires:    libedit-devel
 BuildRequires:    openssl-devel
 BuildRequires:    ncurses-devel
 BuildRequires:    perl
-# wsrep requirements
-Requires:         lsof
-Requires:         net-tools
-Requires:         sh-utils
-Requires:         rsync
 BuildRequires:    systemtap-sdt-devel
 BuildRequires:    zlib-devel
 # auth_pam.so plugin will be build if pam-devel is installed
@@ -375,6 +370,11 @@ Requires(posttrans): systemd
 # mysqlhotcopy needs DBI/DBD support
 Requires:         perl(DBI)
 Requires:         perl(DBD::mysql)
+# wsrep requirements
+Requires:         lsof
+Requires:         net-tools
+Requires:         sh-utils
+Requires:         rsync
 %if %{with mysql_names}
 Provides:         mysql-server = %{sameevr}
 Provides:         mysql-server%{?_isa} = %{sameevr}
@@ -1323,6 +1323,7 @@ fi
 - Disable all mysql names, wrap mysql-compat names with new macro
 - Make %%{name}-server directly require %%{name}
 - Add subpackage mariadb-server-galera (Fedora)
+- Move wsrep requirements to server subpackage
 
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
