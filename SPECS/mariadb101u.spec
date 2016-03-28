@@ -240,6 +240,7 @@ Provides:         %{pkg_name} = %{sameevr}
 Provides:         %{pkg_name}%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name} < %{sameevr}
 
+
 %description
 MariaDB is a community developed branch of MySQL.
 MariaDB is a multi-user, multi-threaded SQL database server.
@@ -265,6 +266,7 @@ Provides:         %{pkg_name}-libs = %{sameevr}
 Provides:         %{pkg_name}-libs%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-libs < %{sameevr}
 
+
 %description      libs
 The mariadb-libs package provides the essential shared libraries for any
 MariaDB/MySQL client program or interface. You will need to install this
@@ -283,6 +285,7 @@ Provides:         %{pkg_name}-config = %{sameevr}
 Provides:         %{pkg_name}-config%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-config < %{sameevr}
 Conflicts:        %{pkg_name}-libs < %{sameevr}
+
 
 %description      config
 The package provides the config file my.cnf and my.cnf.d directory used by any
@@ -303,6 +306,7 @@ Provides:         %{pkg_name}-common = %{sameevr}
 Provides:         %{pkg_name}-common%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-common < %{sameevr}
 
+
 %description      common
 The package provides the essential shared files for any MariaDB program.
 You will need to install this package to use any other MariaDB package.
@@ -319,6 +323,7 @@ Requires:         %{name}-common%{?_isa} = %{sameevr}
 Provides:         %{pkg_name}-errmsg = %{sameevr}
 Provides:         %{pkg_name}-errmsg%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-errmsg < %{sameevr}
+
 
 %description      errmsg
 The package provides error messages files for the MariaDB daemon and the
@@ -373,6 +378,7 @@ Provides:         %{pkg_name}-server = %{sameevr}
 Provides:         %{pkg_name}-server%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-server < %{sameevr}
 
+
 %description      server
 MariaDB is a multi-user, multi-threaded SQL database server. It is a
 client/server implementation consisting of a server daemon (mysqld)
@@ -395,6 +401,7 @@ Provides:         %{pkg_name}-oqgraph-engine = %{sameevr}
 Provides:         %{pkg_name}-oqgraph-engine%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-oqgraph-engine < %{sameevr}
 
+
 %description      oqgraph-engine
 The package provides Open Query GRAPH engine (OQGRAPH) as plugin for MariaDB
 database server. OQGRAPH is a computation engine allowing hierarchies and more
@@ -414,6 +421,7 @@ Requires:         %{name}-server%{?_isa} = %{sameevr}
 Provides:         %{pkg_name}-connect-engine = %{sameevr}
 Provides:         %{pkg_name}-connect-engine%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-connect-engine < %{sameevr}
+
 
 %description      connect-engine
 The CONNECT storage engine enables MariaDB to access external local or
@@ -443,6 +451,7 @@ Provides:         %{pkg_name}-devel = %{sameevr}
 Provides:         %{pkg_name}-devel%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-devel < %{sameevr}
 
+
 %description      devel
 MariaDB is a multi-user, multi-threaded SQL database server. This
 package contains the libraries and header files that are needed for
@@ -469,6 +478,7 @@ Provides:         %{pkg_name}-embedded = %{sameevr}
 Provides:         %{pkg_name}-embedded%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-embedded < %{sameevr}
 
+
 %description      embedded
 MariaDB is a multi-user, multi-threaded SQL database server. This
 package contains a version of the MariaDB server that can be embedded
@@ -493,6 +503,7 @@ Provides:         mysql-embedded-devel%{?_isa} = %{sameevr}
 Provides:         %{pkg_name}-embedded-devel = %{sameevr}
 Provides:         %{pkg_name}-embedded-devel%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-embedded-devel < %{sameevr}
+
 
 %description      embedded-devel
 MariaDB is a multi-user, multi-threaded SQL database server. This
@@ -519,6 +530,7 @@ Provides:         mysql-bench%{?_isa} = %{sameevr}
 Provides:         %{pkg_name}-bench = %{sameevr}
 Provides:         %{pkg_name}-bench%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-bench < %{sameevr}
+
 
 %description      bench
 MariaDB is a multi-user, multi-threaded SQL database server. This
@@ -559,12 +571,14 @@ Provides:         %{pkg_name}-test = %{sameevr}
 Provides:         %{pkg_name}-test%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name}-test < %{sameevr}
 
+
 %description      test
 MariaDB is a multi-user, multi-threaded SQL database server. This
 package contains the regression test suite distributed with
 the MariaDB sources.
 MariaDB is a community developed branch of MySQL.
 %endif
+
 
 %prep
 %setup -q -n mariadb-%{version}
@@ -611,7 +625,6 @@ cat %{SOURCE100} | tee -a mysql-test/rh-skipped-tests.list
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE17} %{SOURCE18} %{SOURCE19} \
    scripts
-
 
 
 %build
@@ -703,6 +716,7 @@ for e in innobase xtradb ; do
     cp -p "storage/$e/pars/$f" "storage/$e/$f"
   done
 done
+
 
 %install
 make DESTDIR=%{buildroot} install
@@ -944,18 +958,22 @@ export MTR_BUILD_THREAD=%{__isa_bits}
 %endif
 %endif
 
+
 %pre server
 /usr/sbin/groupadd -g 27 -o -r mysql >/dev/null 2>&1 || :
 /usr/sbin/useradd -M -N -g mysql -o -r -d %{mysqluserhome} -s /sbin/nologin \
   -c "MySQL Server" -u 27 mysql >/dev/null 2>&1 || :
 
+
 %if %{with clibrary}
 %post libs -p /sbin/ldconfig
 %endif
 
+
 %if %{with embedded}
 %post embedded -p /sbin/ldconfig
 %endif
+
 
 %post server
 %if %{with init_systemd}
@@ -966,6 +984,7 @@ if [ $1 = 1 ]; then
     /sbin/chkconfig --add %{daemon_name}
 fi
 %endif
+
 
 %preun server
 %if %{with init_systemd}
@@ -978,13 +997,16 @@ if [ $1 = 0 ]; then
 fi
 %endif
 
+
 %if %{with clibrary}
 %postun libs -p /sbin/ldconfig
 %endif
 
+
 %if %{with embedded}
 %postun embedded -p /sbin/ldconfig
 %endif
+
 
 %postun server
 %if %{with init_systemd}
@@ -995,6 +1017,7 @@ if [ $1 -ge 1 ]; then
     /sbin/service %{daemon_name} condrestart >/dev/null 2>&1 || :
 fi
 %endif
+
 
 %if %{with client}
 %files
@@ -1085,6 +1108,7 @@ fi
 %lang(sv) %{_datadir}/%{pkg_name}/swedish
 %lang(uk) %{_datadir}/%{pkg_name}/ukrainian
 %endif
+
 
 %files server
 %doc README.mysql-cnf
@@ -1200,7 +1224,6 @@ fi
 %{_datadir}/%{pkg_name}/systemd/mariadb@.service
 %{_datadir}/%{pkg_name}/systemd/use_galera_new_cluster.conf
 
-
 %{daemondir}/%{daemon_name}*
 %{_libexecdir}/mysql-prepare-db-dir
 %{_libexecdir}/mysql-wait-ready
@@ -1268,13 +1291,14 @@ fi
 %{_mandir}/man1/mysql_client_test.1*
 %endif
 
+
 %changelog
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
 - Add Source100
 
 * Tue Feb 09 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.11-2.ius
-- update systemd files, add requirements and re-enable libedit  to align with Fedora
+- update systemd files, add requirements and re-enable libedit to align with Fedora
   http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=35f670f8ce3c6cd6380cf0e8e0842818eb7079d8
   http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=a97ddad354d78d9a2ec7bfa2b54a5baba5b4adbd
   http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=f7a17ba600d9d9c8f447c351e7fb14f644098947
