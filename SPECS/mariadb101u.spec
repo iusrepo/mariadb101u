@@ -500,6 +500,8 @@ Summary:          Development files for MariaDB as an embeddable library
 Group:            Applications/Databases
 Requires:         %{name}-embedded%{?_isa} = %{sameevr}
 Requires:         %{name}-devel%{?_isa} = %{sameevr}
+# embedded-devel should require libaio-devel (rhbz#1290517)
+Requires:         libaio-devel
 %if %{with mysql_names}
 Provides:         mysql-embedded-devel = %{sameevr}
 Provides:         mysql-embedded-devel%{?_isa} = %{sameevr}
@@ -1322,6 +1324,7 @@ fi
 - Add subpackage mariadb-server-galera (Fedora)
 - Move wsrep requirements to server subpackage
 - Remove dangling symlink to /etc/init.d/mysql (Fedora)
+- Embedded-devel should require libaio-devel (Fedora)
 
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
