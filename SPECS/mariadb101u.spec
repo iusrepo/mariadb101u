@@ -934,9 +934,6 @@ rm -rf %{buildroot}%{_datadir}/mysql-test
 rm -f %{buildroot}%{_mandir}/man1/mysql_client_test.1*
 %endif
 
-# random file in /usr/bin that already is in usr/share
-rm -f %{buildroot}%{_bindir}/maria_add_gis_sp.sql
-
 
 %check
 %if %{with test}
