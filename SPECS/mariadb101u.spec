@@ -101,10 +101,6 @@
 # Home directory of mysql user should be same for all packages that create it
 %global mysqluserhome /var/lib/mysql
 
-# The evr of mysql we want to obsolete
-%global obsoleted_mysql_evr 5.6-0
-%global obsoleted_mysql_case_evr 5.5.30-5
-
 # Provide mysql names for compatibility
 %bcond_without mysql_names
 %bcond_with mysql-server_name
@@ -221,8 +217,6 @@ Provides:         mysql-compat-client%{?_isa} = %{sameevr}
 %endif
 
 # MySQL (with caps) is upstream's spelling of their own RPMs for mysql
-%{?obsoleted_mysql_case_evr:Obsoletes: MySQL < %{obsoleted_mysql_case_evr}}
-%{?obsoleted_mysql_evr:Obsoletes: mysql < %{obsoleted_mysql_evr}}
 %{?with_conflicts:Conflicts:        community-mysql}
 
 # Filtering: https://fedoraproject.org/wiki/Packaging:AutoProvidesAndRequiresFiltering
@@ -258,8 +252,6 @@ Requires:         %{name}-common%{?_isa} = %{sameevr}
 Provides:         mysql-libs = %{sameevr}
 Provides:         mysql-libs%{?_isa} = %{sameevr}
 %endif
-%{?obsoleted_mysql_case_evr:Obsoletes: MySQL-libs < %{obsoleted_mysql_case_evr}}
-%{?obsoleted_mysql_evr:Obsoletes: mysql-libs < %{obsoleted_mysql_evr}}
 
 # IUS things
 Provides:         %{pkg_name}-libs = %{sameevr}
@@ -368,10 +360,8 @@ Provides:         mysql-server%{?_isa} = %{sameevr}
 Provides:         mysql-compat-server = %{sameevr}
 Provides:         mysql-compat-server%{?_isa} = %{sameevr}
 %endif
-%{?obsoleted_mysql_case_evr:Obsoletes: MySQL-server < %{obsoleted_mysql_case_evr}}
 %{?with_conflicts:Conflicts:        community-mysql-server}
 %{?with_conflicts:Conflicts:        mariadb-galera-server}
-%{?obsoleted_mysql_evr:Obsoletes: mysql-server < %{obsoleted_mysql_evr}}
 
 # IUS things
 Provides:         %{pkg_name}-server = %{sameevr}
@@ -442,8 +432,6 @@ Requires:         openssl-devel%{?_isa}
 Provides:         mysql-devel = %{sameevr}
 Provides:         mysql-devel%{?_isa} = %{sameevr}
 %endif
-%{?obsoleted_mysql_case_evr:Obsoletes: MySQL-devel < %{obsoleted_mysql_case_evr}}
-%{?obsoleted_mysql_evr:Obsoletes: mysql-devel < %{obsoleted_mysql_evr}}
 %{?with_conflicts:Conflicts:        community-mysql-devel}
 
 # IUS things
@@ -470,8 +458,6 @@ Requires:         %{name}-errmsg%{?_isa} = %{sameevr}
 Provides:         mysql-embedded = %{sameevr}
 Provides:         mysql-embedded%{?_isa} = %{sameevr}
 %endif
-%{?obsoleted_mysql_case_evr:Obsoletes: MySQL-embedded < %{obsoleted_mysql_case_evr}}
-%{?obsoleted_mysql_evr:Obsoletes: mysql-embedded < %{obsoleted_mysql_evr}}
 
 # IUS things
 Provides:         %{pkg_name}-embedded = %{sameevr}
@@ -496,8 +482,6 @@ Provides:         mysql-embedded-devel = %{sameevr}
 Provides:         mysql-embedded-devel%{?_isa} = %{sameevr}
 %endif
 %{?with_conflicts:Conflicts:        community-mysql-embedded-devel}
-%{?obsoleted_mysql_case_evr:Obsoletes: MySQL-embedded-devel < %{obsoleted_mysql_case_evr}}
-%{?obsoleted_mysql_evr:Obsoletes: mysql-embedded-devel < %{obsoleted_mysql_evr}}
 
 # IUS things
 Provides:         %{pkg_name}-embedded-devel = %{sameevr}
@@ -523,8 +507,6 @@ Provides:         mysql-bench = %{sameevr}
 Provides:         mysql-bench%{?_isa} = %{sameevr}
 %endif
 %{?with_conflicts:Conflicts:        community-mysql-bench}
-%{?obsoleted_mysql_case_evr:Obsoletes: MySQL-bench < %{obsoleted_mysql_case_evr}}
-%{?obsoleted_mysql_evr:Obsoletes: mysql-bench < %{obsoleted_mysql_evr}}
 
 # IUS things
 Provides:         %{pkg_name}-bench = %{sameevr}
@@ -563,8 +545,6 @@ Requires:         perl(Time::HiRes)
 Provides:         mysql-test = %{sameevr}
 Provides:         mysql-test%{?_isa} = %{sameevr}
 %endif
-%{?obsoleted_mysql_case_evr:Obsoletes: MySQL-test < %{obsoleted_mysql_case_evr}}
-%{?obsoleted_mysql_evr:Obsoletes: mysql-test < %{obsoleted_mysql_evr}}
 
 # IUS things
 Provides:         %{pkg_name}-test = %{sameevr}
@@ -1296,6 +1276,7 @@ fi
 * Mon Mar 28 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-1.ius
 - Latest upstream
 - Rebase patch2
+- Remove obsoletes
 
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
