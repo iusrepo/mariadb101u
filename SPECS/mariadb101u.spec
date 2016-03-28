@@ -859,8 +859,9 @@ install -p -m 0644 mysql-test/rh-skipped-tests.list %{buildroot}%{_datadir}/mysq
 # remove unneeded RHEL-4 SELinux stuff
 rm -rf %{buildroot}%{_datadir}/%{pkg_name}/SELinux/
 
-# remove SysV init script
+# remove SysV init script and a symlink to that
 rm -f %{buildroot}%{_sysconfdir}/init.d/mysql
+rm -f %{buildroot}%{_libexecdir}/rcmysql
 
 # remove duplicate logrotate script
 rm -f %{buildroot}%{_sysconfdir}/logrotate.d/mysql
@@ -1254,7 +1255,6 @@ fi
 %{_libexecdir}/mysql-check-socket
 %{_libexecdir}/mysql-check-upgrade
 %{_libexecdir}/mysql-scripts-common
-%{_libexecdir}/rcmysql
 
 %{?with_init_systemd:%{_tmpfilesdir}/%{daemon_name}.conf}
 %attr(0755,mysql,mysql) %dir %{pidfiledir}
@@ -1324,6 +1324,7 @@ fi
 - Make %%{name}-server directly require %%{name}
 - Add subpackage mariadb-server-galera (Fedora)
 - Move wsrep requirements to server subpackage
+- Remove dangling symlink to /etc/init.d/mysql (Fedora)
 
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
