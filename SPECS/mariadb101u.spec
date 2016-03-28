@@ -331,12 +331,7 @@ Summary:          The MariaDB server and related files
 Group:            Applications/Databases
 
 # note: no version here = %%{version}-%%{release}
-%if %{with mysql_names}
-Requires:         mysql-compat-client%{?_isa}
-Requires:         mysql%{?_isa}
-%else
 Requires:         %{name}%{?_isa}
-%endif
 Requires:         %{name}-libs%{?_isa} = %{sameevr}
 Requires:         %{name}-common%{?_isa} = %{sameevr}
 Requires:         %{name}-config%{?_isa} = %{sameevr}
@@ -1280,6 +1275,7 @@ fi
 - Rebase patch2
 - Remove obsoletes
 - Disable all mysql names, wrap mysql-compat names with new macro
+- Make %%{name}-server directly require %%{name}
 
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
