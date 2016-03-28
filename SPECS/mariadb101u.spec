@@ -1295,6 +1295,7 @@ fi
 %changelog
 * Mon Mar 28 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-1.ius
 - Latest upstream
+- Rebase patch2
 
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
