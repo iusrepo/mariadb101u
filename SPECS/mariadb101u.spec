@@ -113,7 +113,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 12
+%global bugfixver 13
 
 %global ius_suffix 101u
 
@@ -1293,6 +1293,9 @@ fi
 
 
 %changelog
+* Mon Mar 28 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-1.ius
+- Latest upstream
+
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
 - Add Source100
