@@ -1325,6 +1325,7 @@ fi
 - Move wsrep requirements to server subpackage
 - Remove dangling symlink to /etc/init.d/mysql (Fedora)
 - Embedded-devel should require libaio-devel (Fedora)
+- Use `uname -n` instead of `hostname` in mysql-scripts-common.sh (Fedora)
 
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
