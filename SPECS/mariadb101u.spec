@@ -87,6 +87,14 @@
 %bcond_with pcre
 %endif
 
+# Use cmake3 from EPEL to avoid this bug:
+# http://public.kitware.com/Bug/view.php?id=14782
+%if 0%{?rhel} && 0%{?rhel} <= 7
+%global cmake_name cmake3
+%else
+%global cmake_name cmake
+%endif
+
 # We define some system's well known locations here so we can use them easily
 # later when building to another location (like SCL)
 %global logrotateddir %{_sysconfdir}/logrotate.d
@@ -172,7 +180,8 @@ Patch34:          %{pkgnamepatch}-covscan-stroverflow.patch
 Patch36:          %{pkgnamepatch}-ssltest.patch
 Patch37:          %{pkgnamepatch}-notestdb.patch
 
-BuildRequires:    cmake
+# Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
+BuildRequires:    %{cmake_name} >= 3.3.0
 BuildRequires:    libaio-devel
 BuildRequires:    libedit-devel
 BuildRequires:    openssl-devel
@@ -603,8 +612,6 @@ MariaDB is a community developed branch of MySQL.
 %patch36 -p1
 %patch37 -p1
 
-sed -i -e 's/2.8.7/2.6.4/g' cmake/cpack_rpm.cmake
-
 # workaround for upstream bug #56342
 rm -f mysql-test/t/ssl_8k_key-master.opt
 
@@ -670,7 +677,7 @@ export LDFLAGS
 
 # The INSTALL_xxx macros have to be specified relative to CMAKE_INSTALL_PREFIX
 # so we can't use %%{_datadir} and so forth here.
-%cmake . \
+%{expand:%%%cmake_name} . \
          -DBUILD_CONFIG=mysql_release \
          -DFEATURE_SET="community" \
          -DINSTALL_LAYOUT=RPM \
@@ -783,9 +790,6 @@ mv %{buildroot}%{_sysconfdir}/my.cnf.d/server.cnf %{buildroot}%{_sysconfdir}/my.
 %if %{with init_systemd}
 install -D -p -m 644 scripts/mysql.service %{buildroot}%{_unitdir}/%{daemon_name}.service
 install -D -p -m 644 scripts/mysql@.service %{buildroot}%{_unitdir}/%{daemon_name}@.service
-install -D -p -m 644 scripts/mysql@.service %{buildroot}%{_datadir}/%{pkg_name}/systemd/%{daemon_name}@.service
-mkdir -p %{buildroot}%{_unitdir}/mariadb@bootstrap.service.d
-install -D -p -m 644 %{buildroot}%{_datadir}/%{pkg_name}/systemd/use_galera_new_cluster.conf %{buildroot}%{_unitdir}/mariadb@bootstrap.service.d/use_galera_new_cluster.conf
 install -D -p -m 0644 scripts/mysql.tmpfiles.d %{buildroot}%{_tmpfilesdir}/%{daemon_name}.conf
 %if 0%{?mysqld_pid_dir:1}
 echo "d %{_localstatedir}/run/%{mysqld_pid_dir} 0755 mysql mysql -" >>%{buildroot}%{_tmpfilesdir}/%{daemon_name}.conf
@@ -1326,6 +1330,7 @@ fi
 - Remove dangling symlink to /etc/init.d/mysql (Fedora)
 - Embedded-devel should require libaio-devel (Fedora)
 - Use `uname -n` instead of `hostname` in mysql-scripts-common.sh (Fedora)
+- Build using cmake3 from EPEL
 
 * Fri Feb 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.12-1.ius
 - Update to 10.1.12
