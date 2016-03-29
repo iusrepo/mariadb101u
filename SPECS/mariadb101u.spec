@@ -159,8 +159,6 @@ Source53:         rh-skipped-tests-el7.list
 Source70:         clustercheck.sh
 Source71:         LICENSE.clustercheck
 
-Source100:        ius-skipped-tests.list
-
 # Comments for these patches are in the patch files
 # Patches common for more mysql-like packages
 Patch1:           %{pkgnamepatch}-strmov.patch
@@ -631,8 +629,6 @@ cat %{SOURCE52} | tee -a mysql-test/rh-skipped-tests.list
 %if 0%{?rhel} == 7
 cat %{SOURCE53} | tee -a mysql-test/rh-skipped-tests.list
 %endif
-
-cat %{SOURCE100} | tee -a mysql-test/rh-skipped-tests.list
 
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE17} %{SOURCE18} %{SOURCE19} \

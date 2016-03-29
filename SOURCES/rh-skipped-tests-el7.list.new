@@ -2,3 +2,22 @@ plugins.feedback_plugin_load                    : feedback plugin fails to load 
 plugins.feedback_plugin_send                    : feedback plugin fails to load on EL7
 plugins.feedback_plugin_install                 : feedback plugin fails to load on EL7
 main.ssl_cert_verify                            : test fail starting in 10.1.12
+
+
+main.set_statement_notembedded_binlog
+
+main.ssl
+main.ssl_8k_key
+main.ssl_cert_verify
+main.ssl_compress
+main.ssl_timeout
+main.ssl_7937
+main.ssl_crl_clients
+
+main.openssl_1
+
+perfschema.nesting
+perfschema.socket_summary_by_event_name_func
+perfschema.socket_summary_by_instance_func
+
+main.userstat
