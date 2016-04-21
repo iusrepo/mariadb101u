@@ -121,7 +121,7 @@
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          1.ius%{?dist}
+Release:          2.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -177,7 +177,6 @@ Patch37:          %{pkgnamepatch}-notestdb.patch
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
 BuildRequires:    %{cmake_name} >= 3.3.0
 BuildRequires:    libaio-devel
-BuildRequires:    libedit-devel
 BuildRequires:    openssl-devel
 BuildRequires:    ncurses-devel
 BuildRequires:    perl
@@ -679,6 +678,7 @@ export LDFLAGS
          -DENABLED_LOCAL_INFILE=ON \
          -DENABLE_DTRACE=ON \
          -DWITH_EMBEDDED_SERVER=ON \
+         -DWITH_READLINE=ON \
          -DWITH_SSL=system \
          -DWITH_ZLIB=system \
 %{?with_pcre: -DWITH_PCRE=system}\
@@ -1291,6 +1291,10 @@ fi
 
 
 %changelog
+* Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
+- enable readline support
+  see https://github.com/iuscommunity-pkg/mariadb101u/issues/1
+
 * Wed May 11 2016 Carl George <carl.george@rackspace.com> - 1:10.1.14-1.ius
 - Latest upstream
 - Disable patch36
