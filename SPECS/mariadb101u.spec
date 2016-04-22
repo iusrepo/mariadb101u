@@ -181,7 +181,6 @@ Patch37:          %{pkgnamepatch}-notestdb.patch
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
 BuildRequires:    %{cmake_name} >= 3.3.0
 BuildRequires:    libaio-devel
-BuildRequires:    libedit-devel
 BuildRequires:    openssl-devel
 BuildRequires:    ncurses-devel
 BuildRequires:    perl
@@ -1319,6 +1318,7 @@ fi
 * Thu Apr 21 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.13-2.ius
 - enable readline support
   see https://github.com/iuscommunity-pkg/mariadb101u/issues/1
+- remove BuildRequires for libedit-devel
 
 * Mon Mar 28 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-1.ius
 - Latest upstream
