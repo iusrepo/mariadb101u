@@ -110,9 +110,6 @@
 # Home directory of mysql user should be same for all packages that create it
 %global mysqluserhome /var/lib/mysql
 
-# Provide mysql names for compatibility
-%bcond_with mysql_names
-%bcond_without mysql_compat_names
 %bcond_without conflicts
 
 # Make long macros shorter
@@ -124,7 +121,7 @@
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          1.ius%{?dist}
+Release:          2.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -214,14 +211,10 @@ Requires:         fileutils
 Requires:         grep
 Requires:         %{name}-common%{?_isa} = %{sameevr}
 
-%if %{with mysql_names}
 Provides:         mysql = %{sameevr}
 Provides:         mysql%{?_isa} = %{sameevr}
-%endif
-%if %{with mysql_compat_names}
-Provides:         mysql-compat-client = %{sameevr}
-Provides:         mysql-compat-client%{?_isa} = %{sameevr}
-%endif
+#Provides:         mysql-compat-client = %{sameevr}
+#Provides:         mysql-compat-client%{?_isa} = %{sameevr}
 
 # MySQL (with caps) is upstream's spelling of their own RPMs for mysql
 %{?with_conflicts:Conflicts:        community-mysql}
@@ -255,10 +248,8 @@ contains the standard MariaDB/MySQL client programs and generic MySQL files.
 Summary:          The shared libraries required for MariaDB/MySQL clients
 Group:            Applications/Databases
 Requires:         %{name}-common%{?_isa} = %{sameevr}
-%if %{with mysql_names}
 Provides:         mysql-libs = %{sameevr}
 Provides:         mysql-libs%{?_isa} = %{sameevr}
-%endif
 
 # IUS things
 Provides:         %{pkg_name}-libs = %{sameevr}
@@ -382,14 +373,10 @@ Requires:         lsof
 Requires:         net-tools
 Requires:         sh-utils
 Requires:         rsync
-%if %{with mysql_names}
-Provides:         mysql-server = %{sameevr}
-Provides:         mysql-server%{?_isa} = %{sameevr}
-%endif
-%if %{with mysql_compat_names}
+#Provides:         mysql-server = %{sameevr}
+#Provides:         mysql-server%{?_isa} = %{sameevr}
 Provides:         mysql-compat-server = %{sameevr}
 Provides:         mysql-compat-server%{?_isa} = %{sameevr}
-%endif
 %{?with_conflicts:Conflicts:        community-mysql-server}
 %{?with_conflicts:Conflicts:        mariadb-galera-server}
 
@@ -458,10 +445,8 @@ Summary:          Files for development of MariaDB/MySQL applications
 Group:            Applications/Databases
 %{?with_clibrary:Requires:         %{name}-libs%{?_isa} = %{sameevr}}
 Requires:         openssl-devel%{?_isa}
-%if %{with mysql_names}
 Provides:         mysql-devel = %{sameevr}
 Provides:         mysql-devel%{?_isa} = %{sameevr}
-%endif
 %{?with_conflicts:Conflicts:        community-mysql-devel}
 
 # IUS things
@@ -484,10 +469,8 @@ Summary:          MariaDB as an embeddable library
 Group:            Applications/Databases
 Requires:         %{name}-common%{?_isa} = %{sameevr}
 Requires:         %{name}-errmsg%{?_isa} = %{sameevr}
-%if %{with mysql_names}
-Provides:         mysql-embedded = %{sameevr}
-Provides:         mysql-embedded%{?_isa} = %{sameevr}
-%endif
+#Provides:         mysql-embedded = %{sameevr}
+#Provides:         mysql-embedded%{?_isa} = %{sameevr}
 
 # IUS things
 Provides:         %{pkg_name}-embedded = %{sameevr}
@@ -509,10 +492,8 @@ Requires:         %{name}-embedded%{?_isa} = %{sameevr}
 Requires:         %{name}-devel%{?_isa} = %{sameevr}
 # embedded-devel should require libaio-devel (rhbz#1290517)
 Requires:         libaio-devel
-%if %{with mysql_names}
-Provides:         mysql-embedded-devel = %{sameevr}
-Provides:         mysql-embedded-devel%{?_isa} = %{sameevr}
-%endif
+#Provides:         mysql-embedded-devel = %{sameevr}
+#Provides:         mysql-embedded-devel%{?_isa} = %{sameevr}
 %{?with_conflicts:Conflicts:        community-mysql-embedded-devel}
 
 # IUS things
@@ -534,10 +515,8 @@ MariaDB is a community developed branch of MySQL.
 Summary:          MariaDB benchmark scripts and data
 Group:            Applications/Databases
 Requires:         %{name}%{?_isa} = %{sameevr}
-%if %{with mysql_names}
-Provides:         mysql-bench = %{sameevr}
-Provides:         mysql-bench%{?_isa} = %{sameevr}
-%endif
+#Provides:         mysql-bench = %{sameevr}
+#Provides:         mysql-bench%{?_isa} = %{sameevr}
 %{?with_conflicts:Conflicts:        community-mysql-bench}
 
 # IUS things
@@ -573,10 +552,8 @@ Requires:         perl(Sys::Hostname)
 Requires:         perl(Test::More)
 Requires:         perl(Time::HiRes)
 %{?with_conflicts:Conflicts:        community-mysql-test}
-%if %{with mysql_names}
-Provides:         mysql-test = %{sameevr}
-Provides:         mysql-test%{?_isa} = %{sameevr}
-%endif
+#Provides:         mysql-test = %{sameevr}
+#Provides:         mysql-test%{?_isa} = %{sameevr}
 
 # IUS things
 Provides:         %{pkg_name}-test = %{sameevr}
@@ -1315,6 +1292,9 @@ fi
 
 
 %changelog
+* Fri Apr 22 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-2.ius
+- Sync provides with stock packages for compatibility
+
 * Mon Mar 28 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-1.ius
 - Latest upstream
 - Rebase patch2
