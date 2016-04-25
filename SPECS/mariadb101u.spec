@@ -124,7 +124,7 @@
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          2.ius%{?dist}
+Release:          3.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -1315,7 +1315,7 @@ fi
 
 
 %changelog
-* Thu Apr 21 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.13-2.ius
+* Thu Apr 21 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.13-3.ius
 - enable readline support
   see https://github.com/iuscommunity-pkg/mariadb101u/issues/1
 - remove BuildRequires for libedit-devel
