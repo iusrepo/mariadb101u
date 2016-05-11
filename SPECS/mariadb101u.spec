@@ -115,13 +115,13 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 13
+%global bugfixver 14
 
 %global ius_suffix 101u
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          2.ius%{?dist}
+Release:          1.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -1292,6 +1292,9 @@ fi
 
 
 %changelog
+* Wed May 11 2016 Carl George <carl.george@rackspace.com> - 1:10.1.14-1.ius
+- Latest upstream
+
 * Fri Apr 22 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-2.ius
 - Sync provides with stock packages for compatibility
 
