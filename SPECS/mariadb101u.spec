@@ -172,7 +172,6 @@ Patch30:          %{pkgnamepatch}-errno.patch
 Patch31:          %{pkgnamepatch}-string-overflow.patch
 Patch32:          %{pkgnamepatch}-basedir.patch
 Patch34:          %{pkgnamepatch}-covscan-stroverflow.patch
-Patch36:          %{pkgnamepatch}-ssltest.patch
 Patch37:          %{pkgnamepatch}-notestdb.patch
 
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
@@ -584,7 +583,6 @@ MariaDB is a community developed branch of MySQL.
 %patch31 -p1
 %patch32 -p1
 %patch34 -p1
-%patch36 -p1
 %patch37 -p1
 
 # workaround for upstream bug #56342
@@ -1294,6 +1292,7 @@ fi
 %changelog
 * Wed May 11 2016 Carl George <carl.george@rackspace.com> - 1:10.1.14-1.ius
 - Latest upstream
+- Disable patch36
 
 * Fri Apr 22 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-2.ius
 - Sync provides with stock packages for compatibility
