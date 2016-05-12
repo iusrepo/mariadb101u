@@ -1206,6 +1206,7 @@ fi
 %{_datadir}/%{pkg_name}/mysql_system_tables_data.sql
 %{_datadir}/%{pkg_name}/mysql_test_data_timezone.sql
 %{_datadir}/%{pkg_name}/mysql_performance_tables.sql
+%{_datadir}/%{pkg_name}/mysql_to_mariadb.sql
 %{?with_mroonga:%{_datadir}/%{pkg_name}/mroonga/install.sql}
 %{?with_mroonga:%{_datadir}/%{pkg_name}/mroonga/uninstall.sql}
 %{_datadir}/%{pkg_name}/my-*.cnf
@@ -1293,6 +1294,7 @@ fi
 * Wed May 11 2016 Carl George <carl.george@rackspace.com> - 1:10.1.14-1.ius
 - Latest upstream
 - Disable patch36
+- Own installed file /usr/share/mariadb/mysql_to_mariadb.sql
 
 * Fri Apr 22 2016 Carl George <carl.george@rackspace.com> - 1:10.1.13-2.ius
 - Sync provides with stock packages for compatibility
