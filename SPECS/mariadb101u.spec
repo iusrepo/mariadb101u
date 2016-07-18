@@ -1115,7 +1115,9 @@ fi
 %{_bindir}/galera_new_cluster
 %{_bindir}/clustercheck
 %{_bindir}/galera_recovery
+%{_datadir}/%{pkg_name}/systemd/use_galera_new_cluster.conf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/galera.cnf
+%attr(0640,root,root) %ghost %config(noreplace) %{_sysconfdir}/sysconfig/clustercheck
 
 
 %files server
@@ -1161,7 +1163,6 @@ fi
 %config(noreplace) %{_sysconfdir}/my.cnf.d/%{pkg_name}-server.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/auth_gssapi.cnf
 %{?with_tokudb:%config(noreplace) %{_sysconfdir}/my.cnf.d/tokudb.cnf}
-%attr(0640,root,root) %ghost %config(noreplace) %{_sysconfdir}/sysconfig/clustercheck
 
 %{_libexecdir}/mysqld
 
@@ -1231,7 +1232,6 @@ fi
 %{_datadir}/%{pkg_name}/policy/selinux/mariadb-server.*
 %{_datadir}/%{pkg_name}/systemd/mariadb.service
 %{_datadir}/%{pkg_name}/systemd/mariadb@.service
-%{_datadir}/%{pkg_name}/systemd/use_galera_new_cluster.conf
 
 %{daemondir}/%{daemon_name}*
 %{_libexecdir}/mysql-prepare-db-dir
@@ -1309,6 +1309,9 @@ fi
 - install architecture dependant pc file to arch-dependant location (Fedora)
 - wsrep_on in galera.cnf (Fedora)
 - Add -h and --help options to galera_new_cluster (Fedora)
+- Moved /etc/sysconfig/clustercheck
+    and /usr/share/mariadb/systemd/use_galera_new_cluster.conf
+    to mariadb-server-galera (Fedora)
 
 * Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
 - enable readline support
