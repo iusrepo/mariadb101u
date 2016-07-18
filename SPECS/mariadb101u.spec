@@ -175,6 +175,7 @@ Patch37:          %{pkgnamepatch}-notestdb.patch
 
 # Patches for galera
 Patch40:          %{pkgnamepatch}-galera.cnf.patch
+Patch41:          %{pkgnamepatch}-galera-new-cluster-help.patch
 
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
 BuildRequires:    %{cmake_name} >= 3.3.0
@@ -590,6 +591,7 @@ MariaDB is a community developed branch of MySQL.
 %patch34 -p1
 %patch37 -p1
 %patch40 -p1
+%patch41 -p1
 
 # workaround for upstream bug #56342
 rm -f mysql-test/t/ssl_8k_key-master.opt
@@ -1306,6 +1308,7 @@ fi
 - BR multilib-rpm-config and use it for multilib workarounds (Fedora)
 - install architecture dependant pc file to arch-dependant location (Fedora)
 - wsrep_on in galera.cnf (Fedora)
+- Add -h and --help options to galera_new_cluster (Fedora)
 
 * Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
 - enable readline support
