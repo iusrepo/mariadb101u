@@ -173,6 +173,9 @@ Patch32:          %{pkgnamepatch}-basedir.patch
 Patch34:          %{pkgnamepatch}-covscan-stroverflow.patch
 Patch37:          %{pkgnamepatch}-notestdb.patch
 
+# Patches for galera
+Patch40:          %{pkgnamepatch}-galera.cnf.patch
+
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
 BuildRequires:    %{cmake_name} >= 3.3.0
 BuildRequires:    libaio-devel
@@ -586,6 +589,7 @@ MariaDB is a community developed branch of MySQL.
 %patch32 -p1
 %patch34 -p1
 %patch37 -p1
+%patch40 -p1
 
 # workaround for upstream bug #56342
 rm -f mysql-test/t/ssl_8k_key-master.opt
@@ -824,6 +828,7 @@ install -p -m 0644 %{SOURCE16} %{basename:%{SOURCE16}}
 install -p -m 0644 %{SOURCE71} %{basename:%{SOURCE71}}
 
 # install galera config file
+sed -i -r 's|^wsrep_provider=none|wsrep_provider=%{_libdir}/galera/libgalera_smm.so|' support-files/wsrep.cnf
 install -p -m 0644 support-files/wsrep.cnf %{buildroot}%{_sysconfdir}/my.cnf.d/galera.cnf
 
 # install the clustercheck script
@@ -1300,6 +1305,7 @@ fi
 - Use license macro for inclusion of licenses (Fedora)
 - BR multilib-rpm-config and use it for multilib workarounds (Fedora)
 - install architecture dependant pc file to arch-dependant location (Fedora)
+- wsrep_on in galera.cnf (Fedora)
 
 * Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
 - enable readline support
