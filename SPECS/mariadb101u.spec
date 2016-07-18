@@ -1112,10 +1112,12 @@ fi
 %files server-galera
 %doc Docs/README.wsrep
 %license LICENSE.clustercheck
-%{_bindir}/galera_new_cluster
 %{_bindir}/clustercheck
+%if %{with init_systemd}
+%{_bindir}/galera_new_cluster
 %{_bindir}/galera_recovery
 %{_datadir}/%{pkg_name}/systemd/use_galera_new_cluster.conf
+%endif
 %config(noreplace) %{_sysconfdir}/my.cnf.d/galera.cnf
 %attr(0640,root,root) %ghost %config(noreplace) %{_sysconfdir}/sysconfig/clustercheck
 
@@ -1312,6 +1314,7 @@ fi
 - Moved /etc/sysconfig/clustercheck
     and /usr/share/mariadb/systemd/use_galera_new_cluster.conf
     to mariadb-server-galera (Fedora)
+- Include galera script and config only on systemd-enabled system (Fedora)
 
 * Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
 - enable readline support
