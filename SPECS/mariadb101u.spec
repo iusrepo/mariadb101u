@@ -1294,6 +1294,7 @@ fi
 %changelog
 * Mon Jul 18 2016 Carl George <carl.george@rackspace.com> - 1:10.1.16-1.ius
 - Latest upstream
+- Sync test suite skip list with Fedora
 
 * Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
 - enable readline support

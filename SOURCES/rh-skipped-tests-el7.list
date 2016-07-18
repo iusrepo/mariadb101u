@@ -1,4 +1,3 @@
 plugins.feedback_plugin_load                    : feedback plugin fails to load on EL7
 plugins.feedback_plugin_send                    : feedback plugin fails to load on EL7
 plugins.feedback_plugin_install                 : feedback plugin fails to load on EL7
-main.ssl_cert_verify                            : test fail starting in 10.1.12
