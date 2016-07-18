@@ -232,6 +232,9 @@ Provides:         %{pkg_name} = %{sameevr}
 Provides:         %{pkg_name}%{?_isa} = %{sameevr}
 Conflicts:        %{pkg_name} < %{sameevr}
 
+# Define license macro if not present
+%{!?_licensedir:%global license %doc}
+
 
 %description
 MariaDB is a community developed branch of MySQL.
@@ -1061,8 +1064,9 @@ fi
 
 %if %{with common}
 %files common
-%doc README COPYING COPYING.LESSER README.mysql-license README.mysql-docs
-%doc storage/innobase/COPYING.Percona storage/innobase/COPYING.Google
+%license COPYING COPYING.LESSER
+%license storage/innobase/COPYING.Percona storage/innobase/COPYING.Google
+%doc README README.mysql-license README.mysql-docs
 %dir %{_libdir}/mysql
 %dir %{_libdir}/mysql/plugin
 %dir %{_datadir}/%{pkg_name}
@@ -1296,6 +1300,7 @@ fi
 - Latest upstream
 - Sync test suite skip list with Fedora
 - Sync mysql-prepare-db-dir.sh with Fedora
+- Use license macro for inclusion of licenses (Fedora)
 
 * Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
 - enable readline support
