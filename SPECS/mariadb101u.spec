@@ -134,7 +134,6 @@ License:          GPLv2 with exceptions and LGPLv2 and BSD
 Source0:          http://mirrors.syringanetworks.net/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
 Source2:          mysql_config_multilib.sh
 Source3:          my.cnf.in
-Source4:          my_config.h
 Source5:          README.mysql-cnf
 Source6:          README.mysql-docs
 Source7:          README.mysql-license
@@ -182,6 +181,7 @@ BuildRequires:    ncurses-devel
 BuildRequires:    perl
 BuildRequires:    systemtap-sdt-devel
 BuildRequires:    zlib-devel
+BuildRequires:    multilib-rpm-config
 # auth_pam.so plugin will be build if pam-devel is installed
 BuildRequires:    pam-devel
 %{?with_pcre:BuildRequires: pcre-devel >= 8.35}
@@ -717,22 +717,20 @@ cp -p -f mysql_config.tmp %{buildroot}%{_bindir}/mysql_config
 chmod 755 %{buildroot}%{_bindir}/mysql_config
 
 # multilib header support
+for header in mysql/my_config.h mysql/private/config.h; do
+%multilib_fix_c_header --file %{_includedir}/$header
+done
+
+# multilib support for shell scripts
 # we only apply this to known Red Hat multilib arches, per bug #181335
-unamei=$(uname -i)
-%ifarch %{arm}
-unamei=arm
-%endif
-%ifarch %{power64}
-unamei=ppc64
-%endif
-%ifarch %{arm} aarch64 %{ix86} x86_64 ppc %{power64} %{sparc} s390 s390x
-mv %{buildroot}%{_includedir}/mysql/my_config.h %{buildroot}%{_includedir}/mysql/my_config_${unamei}.h
-mv %{buildroot}%{_includedir}/mysql/private/config.h %{buildroot}%{_includedir}/mysql/private/my_config_${unamei}.h
-install -p -m 644 %{SOURCE4} %{buildroot}%{_includedir}/mysql/
-install -p -m 644 %{SOURCE4} %{buildroot}%{_includedir}/mysql/private/config.h
+if %multilib_capable; then
 mv %{buildroot}%{_bindir}/mysql_config %{buildroot}%{_bindir}/mysql_config-%{__isa_bits}
 install -p -m 0755 scripts/mysql_config_multilib %{buildroot}%{_bindir}/mysql_config
-%endif
+fi
+
+# Upstream install this into arch-independent directory, TODO: report
+mkdir -p %{buildroot}/%{_libdir}/pkgconfig
+mv %{buildroot}/%{_datadir}/pkgconfig/*.pc %{buildroot}/%{_libdir}/pkgconfig
 
 # install INFO_SRC, INFO_BIN into libdir (upstream thinks these are doc files,
 # but that's pretty wacko --- see also %%{name}-file-contents.patch)
@@ -870,7 +868,7 @@ rm -f %{buildroot}%{_mandir}/man1/{mysql_client_test_embedded,mysqltest_embedded
 rm -f %{buildroot}%{_bindir}/mysql_config*
 rm -rf %{buildroot}%{_includedir}/mysql
 rm -f %{buildroot}%{_datadir}/aclocal/mysql.m4
-rm -f %{buildroot}%{_datadir}/pkgconfig/mariadb.pc
+rm -f %{buildroot}%{_libdir}/pkgconfig/mariadb.pc
 rm -f %{buildroot}%{_libdir}/mysql/libmysqlclient*.so
 rm -f %{buildroot}%{_mandir}/man1/mysql_config.1*
 %endif
@@ -1257,11 +1255,10 @@ fi
 
 %if %{with devel}
 %files devel
-%{_bindir}/mysql_config
-%{_bindir}/mysql_config-%{__isa_bits}
+%{_bindir}/mysql_config*
 %{_includedir}/mysql
 %{_datadir}/aclocal/mysql.m4
-%{_datadir}/pkgconfig/mariadb.pc
+%{_libdir}/pkgconfig/mariadb.pc
 %if %{with clibrary}
 %{_libdir}/mysql/libmysqlclient.so
 %{_libdir}/mysql/libmysqlclient_r.so
@@ -1301,6 +1298,8 @@ fi
 - Sync test suite skip list with Fedora
 - Sync mysql-prepare-db-dir.sh with Fedora
 - Use license macro for inclusion of licenses (Fedora)
+- BR multilib-rpm-config and use it for multilib workarounds (Fedora)
+- install architecture dependant pc file to arch-dependant location (Fedora)
 
 * Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
 - enable readline support
