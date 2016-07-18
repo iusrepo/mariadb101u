@@ -115,13 +115,13 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 14
+%global bugfixver 16
 
 %global ius_suffix 101u
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          2.ius%{?dist}
+Release:          1.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -1105,6 +1105,7 @@ fi
 %license LICENSE.clustercheck
 %{_bindir}/galera_new_cluster
 %{_bindir}/clustercheck
+%{_bindir}/galera_recovery
 %config(noreplace) %{_sysconfdir}/my.cnf.d/galera.cnf
 
 
@@ -1291,6 +1292,9 @@ fi
 
 
 %changelog
+* Mon Jul 18 2016 Carl George <carl.george@rackspace.com> - 1:10.1.16-1.ius
+- Latest upstream
+
 * Thu May 26 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.14-2.ius
 - enable readline support
   see https://github.com/iuscommunity-pkg/mariadb101u/issues/1
