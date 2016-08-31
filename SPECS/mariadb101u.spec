@@ -115,7 +115,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 16
+%global bugfixver 17
 
 %global ius_suffix 101u
 
@@ -1302,6 +1302,9 @@ fi
 
 
 %changelog
+* Wed Aug 31 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.17-1.ius
+- Latest upstream
+
 * Mon Jul 18 2016 Carl George <carl.george@rackspace.com> - 1:10.1.16-1.ius
 - Latest upstream
 - Sync test suite skip list with Fedora
