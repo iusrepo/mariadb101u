@@ -177,6 +177,8 @@ Patch37:          %{pkgnamepatch}-notestdb.patch
 Patch40:          %{pkgnamepatch}-galera.cnf.patch
 Patch41:          %{pkgnamepatch}-galera-new-cluster-help.patch
 
+Source100:        ius-skipped-tests.list
+
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
 BuildRequires:    %{cmake_name} >= 3.3.0
 BuildRequires:    libaio-devel
@@ -612,6 +614,8 @@ cat %{SOURCE52} | tee -a mysql-test/rh-skipped-tests.list
 %if 0%{?rhel} == 7
 cat %{SOURCE53} | tee -a mysql-test/rh-skipped-tests.list
 %endif
+
+cat %{SOURCE100} | tee -a mysql-test/rh-skipped-tests.list
 
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE17} %{SOURCE18} %{SOURCE19} \
@@ -1304,6 +1308,7 @@ fi
 %changelog
 * Wed Aug 31 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.17-1.ius
 - Latest upstream
+- Add Source100 and skip sys_vars.wsrep_provider_options_basic
 
 * Mon Jul 18 2016 Carl George <carl.george@rackspace.com> - 1:10.1.16-1.ius
 - Latest upstream
