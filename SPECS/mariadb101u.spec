@@ -115,7 +115,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 17
+%global bugfixver 18
 
 %global ius_suffix 101u
 
@@ -1306,6 +1306,10 @@ fi
 
 
 %changelog
+* Fri Sep 30 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.18-1.ius
+- Latest upstream
+- refresh Patch8
+
 * Wed Aug 31 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.17-1.ius
 - Latest upstream
 - Add Source100 and skip sys_vars.wsrep_provider_options_basic
