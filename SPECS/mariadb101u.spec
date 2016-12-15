@@ -115,7 +115,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 19
+%global bugfixver 20
 
 %global ius_suffix 101u
 
@@ -165,6 +165,7 @@ Patch7:           %{pkgnamepatch}-scripts.patch
 Patch8:           %{pkgnamepatch}-install-db-sharedir.patch
 Patch9:           %{pkgnamepatch}-ownsetup.patch
 Patch12:          %{pkgnamepatch}-admincrash.patch
+Patch14:          %{pkgnamepatch}-example-config-files.patch
 
 # Patches specific for this mysql package
 Patch30:          %{pkgnamepatch}-errno.patch
@@ -451,7 +452,8 @@ or products (such as Excel), or data retrieved from the environment
 Summary:          Files for development of MariaDB/MySQL applications
 Group:            Applications/Databases
 %{?with_clibrary:Requires:         %{name}-libs%{?_isa} = %{sameevr}}
-Requires:         openssl-devel%{?_isa}
+# avoid issues with openssl1.0 / openssl1.1 / compat
+Requires:         pkgconfig(openssl)
 Provides:         mysql-devel = %{sameevr}
 Provides:         mysql-devel%{?_isa} = %{sameevr}
 %{?with_conflicts:Conflicts:        community-mysql-devel}
@@ -587,6 +589,7 @@ MariaDB is a community developed branch of MySQL.
 %patch8 -p1
 %patch9 -p1
 %patch12 -p1
+%patch14 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -1306,6 +1309,13 @@ fi
 
 
 %changelog
+* Thu Dec 15 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.20-1.ius
+- Latest upstream
+- update Requires from:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=921725f94f4bd124ba579a660bc3622d566f811e
+- add Patch14 from:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=10402ba1d7d370d7f0d651ed63730b22698cf654
+
 * Mon Nov 07 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.19-1.ius
 - Latest upstream
 
