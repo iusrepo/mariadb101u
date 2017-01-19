@@ -115,7 +115,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 20
+%global bugfixver 21
 
 %global ius_suffix 101u
 
@@ -1154,6 +1154,7 @@ fi
 %{_bindir}/mysqldumpslow
 %{_bindir}/mysqld_multi
 %{_bindir}/mysqld_safe
+%{_bindir}/mysqld_safe_helper
 %{_bindir}/mysqlhotcopy
 %{_bindir}/mysqltest
 %{_bindir}/innochecksum
@@ -1238,7 +1239,7 @@ fi
 %{_datadir}/%{pkg_name}/policy/apparmor/README
 %{_datadir}/%{pkg_name}/policy/apparmor/usr.sbin.mysqld*
 %{_datadir}/%{pkg_name}/policy/selinux/README
-%{_datadir}/%{pkg_name}/policy/selinux/mariadb-server.*
+%{_datadir}/%{pkg_name}/policy/selinux/mariadb*
 %{_datadir}/%{pkg_name}/systemd/mariadb.service
 %{_datadir}/%{pkg_name}/systemd/mariadb@.service
 
@@ -1309,6 +1310,11 @@ fi
 
 
 %changelog
+* Thu Jan 19 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.21-1.ius
+- Latest upstream
+- add new file, /usr/bin/mysqld_safe_helper
+- tweak %files for selinux
+
 * Thu Dec 15 2016 Ben Harper <ben.harper@rackspace.com> - 1:10.1.20-1.ius
 - Latest upstream
 - update Requires from:
