@@ -115,7 +115,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 21
+%global bugfixver 22
 
 %global ius_suffix 101u
 
@@ -157,7 +157,6 @@ Source71:         LICENSE.clustercheck
 
 # Comments for these patches are in the patch files
 # Patches common for more mysql-like packages
-Patch1:           %{pkgnamepatch}-strmov.patch
 Patch2:           %{pkgnamepatch}-install-test.patch
 Patch4:           %{pkgnamepatch}-logrotate.patch
 Patch5:           %{pkgnamepatch}-file-contents.patch
@@ -189,6 +188,9 @@ BuildRequires:    perl
 BuildRequires:    systemtap-sdt-devel
 BuildRequires:    zlib-devel
 BuildRequires:    multilib-rpm-config
+# Cracklib plugin
+BuildRequires: cracklib-devel
+BuildRequires: cracklib-dicts
 # auth_pam.so plugin will be build if pam-devel is installed
 BuildRequires:    pam-devel
 %{?with_pcre:BuildRequires: pcre-devel >= 8.35}
@@ -581,16 +583,13 @@ MariaDB is a community developed branch of MySQL.
 %prep
 %setup -q -n mariadb-%{version}
 
-%patch1 -p1
 %patch2 -p1
 %patch4 -p1
 %patch5 -p1
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch12 -p1
 %patch14 -p1
-%patch30 -p1
 %patch31 -p1
 %patch32 -p1
 %patch34 -p1
@@ -749,7 +748,7 @@ mv %{buildroot}/%{_datadir}/pkgconfig/*.pc %{buildroot}/%{_libdir}/pkgconfig
 # but that's pretty wacko --- see also %%{name}-file-contents.patch)
 install -p -m 644 Docs/INFO_SRC %{buildroot}%{_libdir}/mysql/
 install -p -m 644 Docs/INFO_BIN %{buildroot}%{_libdir}/mysql/
-rm -rf %{buildroot}%{_pkgdocdir}/MariaDB-server-%{version}/
+rm -r %{buildroot}%{_datadir}/doc/%{_pkgdocdirname}/MariaDB-server-%{version}/
 
 mkdir -p %{buildroot}%{logfiledir}
 chmod 0750 %{buildroot}%{logfiledir}
@@ -1174,6 +1173,9 @@ fi
 %config(noreplace) %{_sysconfdir}/my.cnf.d/auth_gssapi.cnf
 %{?with_tokudb:%config(noreplace) %{_sysconfdir}/my.cnf.d/tokudb.cnf}
 
+# Cracklib plugin
+%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
+
 %{_libexecdir}/mysqld
 
 %{_libdir}/mysql/INFO_SRC
@@ -1310,6 +1312,18 @@ fi
 
 
 %changelog
+* Tue Mar 14 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.22-1.ius
+- Latest upstream
+- update Patch4 and Patch7
+- Remove Patch1, from:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=4a9448cf0c3a293501ce16ffc9de8840575bc69b
+- Remove Source9, Patch12 and Patch30, from:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=ae4f65b4613485556cbb2056e7f20544ca811958
+- update macro to remove docs, from:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=220a57c9a37a0ccf9a321b4335a54dbcc8d2d5f3
+- add Cracklib support, from:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=9442da192282aa74f43e86c96202109a173bbaba
+
 * Thu Jan 19 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.21-1.ius
 - Latest upstream
 - add new file, /usr/bin/mysqld_safe_helper
