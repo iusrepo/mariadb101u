@@ -121,7 +121,7 @@
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          1.ius%{?dist}
+Release:          2.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -839,6 +839,10 @@ install -p -m 0644 %{SOURCE71} %{basename:%{SOURCE71}}
 sed -i -r 's|^wsrep_provider=none|wsrep_provider=%{_libdir}/galera/libgalera_smm.so|' support-files/wsrep.cnf
 install -p -m 0644 support-files/wsrep.cnf %{buildroot}%{_sysconfdir}/my.cnf.d/galera.cnf
 
+# disable Cracklib by default
+sed -i '1i #SELinux see, https://mariadb.com/kb/en/mariadb/cracklib_password_check/#selinux' %{buildroot}%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
+sed -i 's|^plugin-load-add=cracklib_password_check.so|#plugin-load-add=cracklib_password_check.so|' %{buildroot}%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
+
 # install the clustercheck script
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 touch %{buildroot}%{_sysconfdir}/sysconfig/clustercheck
@@ -1312,6 +1316,10 @@ fi
 
 
 %changelog
+* Tue May 02 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.22-2.ius
+- disable Cracklib by default, see:
+  https://github.com/iuscommunity-pkg/mariadb101u/issues/5
+
 * Tue Mar 14 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.22-1.ius
 - Latest upstream
 - update Patch4 and Patch7
