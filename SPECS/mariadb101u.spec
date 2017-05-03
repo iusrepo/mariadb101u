@@ -121,7 +121,7 @@
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          2.ius%{?dist}
+Release:          3.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -1178,7 +1178,7 @@ fi
 %{?with_tokudb:%config(noreplace) %{_sysconfdir}/my.cnf.d/tokudb.cnf}
 
 # Cracklib plugin
-%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
+%config(noreplace) %{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
 
 %{_libexecdir}/mysqld
 
@@ -1316,6 +1316,9 @@ fi
 
 
 %changelog
+* Wed May 03 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.22-3.ius
+- cracklib_password_check.cnf needs %config(noreplace)
+
 * Tue May 02 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.22-2.ius
 - disable Cracklib by default, see:
   https://github.com/iuscommunity-pkg/mariadb101u/issues/5
