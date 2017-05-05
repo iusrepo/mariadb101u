@@ -115,13 +115,13 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 22
+%global bugfixver 23
 
 %global ius_suffix 101u
 
 Name:             %{pkg_name}%{?ius_suffix}
 Version:          %{compatver}.%{bugfixver}
-Release:          3.ius%{?dist}
+Release:          1.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -188,6 +188,7 @@ BuildRequires:    perl
 BuildRequires:    systemtap-sdt-devel
 BuildRequires:    zlib-devel
 BuildRequires:    multilib-rpm-config
+BuildRequires:    selinux-policy-devel
 # Cracklib plugin
 BuildRequires: cracklib-devel
 BuildRequires: cracklib-dicts
@@ -696,6 +697,7 @@ export LDFLAGS
          -DWITH_READLINE=ON \
          -DWITH_SSL=system \
          -DWITH_ZLIB=system \
+	 -DWITH_MARIABACKUP=no \
 %{?with_pcre: -DWITH_PCRE=system}\
          -DWITH_JEMALLOC=no \
 %{!?with_tokudb: -DWITHOUT_TOKUDB=ON}\
@@ -1079,7 +1081,7 @@ fi
 
 %if %{with common}
 %files common
-%license COPYING COPYING.LESSER
+%license COPYING
 %license storage/innobase/COPYING.Percona storage/innobase/COPYING.Google
 %doc README README.mysql-license README.mysql-docs
 %dir %{_libdir}/mysql
@@ -1170,6 +1172,7 @@ fi
 %{_bindir}/wsrep_sst_rsync
 %{_bindir}/wsrep_sst_xtrabackup
 %{_bindir}/wsrep_sst_xtrabackup-v2
+%{_bindir}/wsrep_sst_mariabackup
 %{?with_tokudb:%{_bindir}/tokuftdump}
 %{?with_tokudb:%{_bindir}/tokuft_logprint}
 
@@ -1224,6 +1227,18 @@ fi
 %{_mandir}/man1/resolveip.1*
 %{_mandir}/man1/mysql_tzinfo_to_sql.1*
 %{_mandir}/man8/mysqld.8*
+%{_mandir}/man1/galera_new_cluster.1.*
+%{_mandir}/man1/galera_recovery.1.*
+%{_mandir}/man1/mariadb-service-convert.1.*
+%{_mandir}/man1/my_safe_process.1.*
+%{_mandir}/man1/mysqld_safe_helper.1.*
+%{_mandir}/man1/tokuft_logdump.1.*
+%{_mandir}/man1/tokuftdump.1.*
+%{_mandir}/man1/wsrep_sst_common.1.*
+%{_mandir}/man1/wsrep_sst_mysqldump.1.*
+%{_mandir}/man1/wsrep_sst_rsync.1.*
+%{_mandir}/man1/wsrep_sst_xtrabackup-v2.1.*
+%{_mandir}/man1/wsrep_sst_xtrabackup.1.*
 
 %{_datadir}/%{pkg_name}/fill_help_tables.sql
 %{_datadir}/%{pkg_name}/install_spider.sql
@@ -1316,6 +1331,13 @@ fi
 
 
 %changelog
+* Fri May 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.23-1.ius
+- Latest upstream
+- add BuildRequires selinux-policy-devel
+- disable MariaDB Backup, due to its alpha status
+- remove COPYING.LESSER from %files, removed upstream
+- add wsrep_sst_mariabackup and several man pages to %files
+
 * Wed May 03 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.22-3.ius
 - cracklib_password_check.cnf needs %config(noreplace)
 
