@@ -1337,6 +1337,7 @@ fi
 - disable MariaDB Backup, due to its alpha status
 - remove COPYING.LESSER from %files, removed upstream
 - add wsrep_sst_mariabackup and several man pages to %files
+- skip failing tests
 
 * Wed May 03 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.22-3.ius
 - cracklib_password_check.cnf needs %config(noreplace)
