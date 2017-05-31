@@ -1407,6 +1407,7 @@ fi
 - Move non-essential utilites to server-utils subpackage (Fedora)
 - Clean up provides, conflicts, and requires
 - JdbcMariaDB.jar test removed (Fedora)
+- Update mysql-prepare-db-dir.sh rhbz#1382988 (Fedora)
 
 * Fri May 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.23-1.ius
 - Latest upstream
