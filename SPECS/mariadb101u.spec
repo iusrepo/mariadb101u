@@ -115,7 +115,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 23
+%global bugfixver 24
 
 %global ius_suffix 101u
 
@@ -1328,6 +1328,9 @@ fi
 
 
 %changelog
+* Thu Jun 01 2017 Carl George <carl.george@rackspace.com> - 1:10.1.24-1.ius
+- Latest upstream
+
 * Fri May 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.23-1.ius
 - Latest upstream
 - add BuildRequires selinux-policy-devel
