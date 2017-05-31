@@ -373,9 +373,6 @@ Requires(pre):    systemd
 Requires(posttrans): systemd
 %{?systemd_requires: %systemd_requires}
 %endif
-# mysqlhotcopy needs DBI/DBD support
-Requires:         perl(DBI)
-Requires:         perl(DBD::mysql)
 # wsrep requirements
 Requires:         lsof
 Requires:         net-tools
@@ -445,6 +442,20 @@ types, in particular files in various formats, data extracted from other DBMS
 or products (such as Excel), or data retrieved from the environment
 (for example DIR, WMI, and MAC tables).
 %endif
+
+
+%package          server-utils
+Summary:          Non-essential server utilities for MariaDB/MySQL applications
+Group:            Applications/Databases
+Requires:         %{name}-server%{?_isa} = %{sameevr}
+# mysqlhotcopy needs DBI/DBD support
+Requires:         perl(DBI) perl(DBD::mysql)
+
+
+%description      server-utils
+This package contains all non-essential server utilities and scripts for managing
+databases. It also contains all utilities requiring Perl and it is the only MariaDB
+subpackage, except test subpackage, that depends on Perl.
 
 
 %if %{with devel}
@@ -1144,23 +1155,12 @@ fi
 %{_bindir}/myisam_ftdump
 %{_bindir}/myisamlog
 %{_bindir}/myisampack
-%{_bindir}/mysql_convert_table_format
-%{_bindir}/mysql_fix_extensions
 %{_bindir}/mysql_install_db
 %{_bindir}/mysql_secure_installation
-%{_bindir}/mysql_setpermission
 %{_bindir}/mysql_tzinfo_to_sql
-%{_bindir}/mysql_upgrade
-%{_bindir}/mysql_zap
 %{_bindir}/mysqlbug
-%{_bindir}/mysqldumpslow
-%{_bindir}/mysqld_multi
 %{_bindir}/mysqld_safe
-%{_bindir}/mysqld_safe_helper
-%{_bindir}/mysqlhotcopy
-%{_bindir}/mysqltest
 %{_bindir}/innochecksum
-%{_bindir}/perror
 %{_bindir}/replace
 %{_bindir}/resolve_stack_dump
 %{_bindir}/resolveip
@@ -1202,23 +1202,13 @@ fi
 %{_mandir}/man1/myisamchk.1*
 %{_mandir}/man1/myisamlog.1*
 %{_mandir}/man1/myisampack.1*
-%{_mandir}/man1/mysql_convert_table_format.1*
 %{_mandir}/man1/myisam_ftdump.1*
 %{_mandir}/man1/mysql.server.1*
-%{_mandir}/man1/mysql_fix_extensions.1*
 %{_mandir}/man1/mysql_install_db.1*
 %{_mandir}/man1/mysql_secure_installation.1*
-%{_mandir}/man1/mysql_upgrade.1*
-%{_mandir}/man1/mysql_zap.1*
 %{_mandir}/man1/mysqlbug.1*
-%{_mandir}/man1/mysqldumpslow.1*
-%{_mandir}/man1/mysqld_multi.1*
 %{_mandir}/man1/mysqld_safe.1*
-%{_mandir}/man1/mysqlhotcopy.1*
-%{_mandir}/man1/mysql_setpermission.1*
-%{_mandir}/man1/mysqltest.1*
 %{_mandir}/man1/innochecksum.1*
-%{_mandir}/man1/perror.1*
 %{_mandir}/man1/replace.1*
 %{_mandir}/man1/resolve_stack_dump.1*
 %{_mandir}/man1/resolveip.1*
@@ -1228,7 +1218,6 @@ fi
 %{_mandir}/man1/galera_recovery.1.*
 %{_mandir}/man1/mariadb-service-convert.1.*
 %{_mandir}/man1/my_safe_process.1.*
-%{_mandir}/man1/mysqld_safe_helper.1.*
 %{_mandir}/man1/tokuft_logdump.1.*
 %{_mandir}/man1/tokuftdump.1.*
 %{_mandir}/man1/wsrep_sst_common.1.*
@@ -1288,6 +1277,35 @@ fi
 %{_libdir}/mysql/plugin/ha_connect.so
 %endif
 
+
+%files server-utils
+#Perl utilities
+%{_bindir}/mysql_convert_table_format
+%{_bindir}/mysql_fix_extensions
+%{_bindir}/mysql_setpermission
+%{_bindir}/mysql_zap
+%{_bindir}/mysqldumpslow
+%{_bindir}/mysqld_multi
+%{_bindir}/mysqlhotcopy
+%{_mandir}/man1/mysql_convert_table_format.1*
+%{_mandir}/man1/mysql_fix_extensions.1*
+%{_mandir}/man1/mysql_zap.1*
+%{_mandir}/man1/mysqldumpslow.1*
+%{_mandir}/man1/mysqld_multi.1*
+%{_mandir}/man1/mysqlhotcopy.1*
+%{_mandir}/man1/mysql_setpermission.1*
+#Utilities that can be used remotely
+%{_bindir}/mysql_upgrade
+%{_bindir}/mysqltest
+%{_bindir}/perror
+%{_mandir}/man1/mysql_upgrade.1*
+%{_mandir}/man1/mysqltest.1*
+%{_mandir}/man1/perror.1*
+#Other utilities
+%{_bindir}/mysqld_safe_helper
+%{_mandir}/man1/mysqld_safe_helper.1.*
+
+
 %if %{with devel}
 %files devel
 %{_bindir}/mysql_config*
@@ -1330,6 +1348,7 @@ fi
 %changelog
 * Thu Jun 01 2017 Carl George <carl.george@rackspace.com> - 1:10.1.24-1.ius
 - Latest upstream
+- Move non-essential utilites to server-utils subpackage (Fedora)
 
 * Fri May 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.23-1.ius
 - Latest upstream
