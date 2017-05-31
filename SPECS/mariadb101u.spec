@@ -137,7 +137,6 @@ Source3:          my.cnf.in
 Source5:          README.mysql-cnf
 Source6:          README.mysql-docs
 Source7:          README.mysql-license
-Source9:          mysql-embedded-check.c
 Source10:         mysql.tmpfiles.d.in
 Source11:         mysql.service.in
 Source12:         mysql-prepare-db-dir.sh
@@ -163,11 +162,9 @@ Patch5:           %{pkgnamepatch}-file-contents.patch
 Patch7:           %{pkgnamepatch}-scripts.patch
 Patch8:           %{pkgnamepatch}-install-db-sharedir.patch
 Patch9:           %{pkgnamepatch}-ownsetup.patch
-Patch12:          %{pkgnamepatch}-admincrash.patch
 Patch14:          %{pkgnamepatch}-example-config-files.patch
 
 # Patches specific for this mysql package
-Patch30:          %{pkgnamepatch}-errno.patch
 Patch31:          %{pkgnamepatch}-string-overflow.patch
 Patch32:          %{pkgnamepatch}-basedir.patch
 Patch34:          %{pkgnamepatch}-covscan-stroverflow.patch
