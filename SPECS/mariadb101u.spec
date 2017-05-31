@@ -11,8 +11,11 @@
 %global check_testsuite 0
 
 # In f20+ use unversioned docdirs, otherwise the old versioned one
-%global _pkgdocdirname %{name}%{!?_pkgdocdir:-%{version}}
-%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
+%if 0%{?rhel} && 0%{?rhel} <= 7
+%global _pkgdocdirname %{name}-%{version}
+%else
+%global _pkgdocdirname %{name}
+%endif
 
 # Use Full RELRO for all binaries (RHBZ#1092548)
 %global _hardened_build 1
@@ -110,16 +113,12 @@
 # Home directory of mysql user should be same for all packages that create it
 %global mysqluserhome /var/lib/mysql
 
-%bcond_without conflicts
-
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
 %global bugfixver 24
 
-%global ius_suffix 101u
-
-Name:             %{pkg_name}%{?ius_suffix}
+Name:             mariadb101u
 Version:          %{compatver}.%{bugfixver}
 Release:          1.ius%{?dist}
 Epoch:            1
@@ -607,7 +606,7 @@ MariaDB is a community developed branch of MySQL.
 
 %if %{with test}
 %package          test
-Summary:          The test suite distributed with MariaD
+Summary:          The test suite distributed with MariaDB
 Group:            Applications/Databases
 Requires:         %{name}%{?_isa} = %{sameevr}
 Requires:         %{name}-common%{?_isa} = %{sameevr}
@@ -751,7 +750,7 @@ export LDFLAGS
          -DINSTALL_SQLBENCHDIR=share \
          -DINSTALL_SUPPORTFILESDIR=share/%{pkg_name} \
          -DMYSQL_DATADIR="%{dbdatadir}" \
-         -DMYSQL_UNIX_ADDR="/var/lib/mysql/mysql.sock" \
+         -DMYSQL_UNIX_ADDR="%{_localstatedir}/lib/mysql/mysql.sock" \
          -DENABLED_LOCAL_INFILE=ON \
          -DENABLE_DTRACE=ON \
          -DWITH_EMBEDDED_SERVER=ON \
@@ -763,6 +762,7 @@ export LDFLAGS
          -DWITH_JEMALLOC=no \
 %{!?with_tokudb: -DWITHOUT_TOKUDB=ON}\
 %{!?with_mroonga: -DWITHOUT_MROONGA=ON}\
+%{!?with_oqgraph: -DWITHOUT_OQGRAPH=ON}\
          -DTMPDIR=/var/tmp \
 %{?with_debug: -DCMAKE_BUILD_TYPE=Debug}\
          %{?_hardened_build:-DWITH_MYSQLD_LDFLAGS="-pie -Wl,-z,relro,-z,now"}
@@ -811,7 +811,7 @@ mv %{buildroot}/%{_datadir}/pkgconfig/*.pc %{buildroot}/%{_libdir}/pkgconfig
 # but that's pretty wacko --- see also %%{name}-file-contents.patch)
 install -p -m 644 Docs/INFO_SRC %{buildroot}%{_libdir}/mysql/
 install -p -m 644 Docs/INFO_BIN %{buildroot}%{_libdir}/mysql/
-rm -r %{buildroot}%{_datadir}/doc/%{_pkgdocdirname}/MariaDB-server-%{version}/
+rm -r %{buildroot}%{_pkgdocdir}/MariaDB-server-%{version}/
 
 mkdir -p %{buildroot}%{logfiledir}
 chmod 0750 %{buildroot}%{logfiledir}
@@ -922,7 +922,7 @@ rm -f %{buildroot}%{_sysconfdir}/init.d/mysql
 rm -f %{buildroot}%{_libexecdir}/rcmysql
 
 # remove duplicate logrotate script
-rm -f %{buildroot}%{_sysconfdir}/logrotate.d/mysql
+rm -f %{buildroot}%{logrotateddir}/mysql
 
 # remove solaris files
 rm -rf %{buildroot}%{_datadir}/%{pkg_name}/solaris/
@@ -967,6 +967,10 @@ mysqldump,mysqlimport,mysqlshow,mysqlslap,my_print_defaults}.1*
 
 %if %{without connect}
 rm -f %{buildroot}%{_sysconfdir}/my.cnf.d/connect.cnf
+%endif
+
+%if %{without oqgraph}
+rm -f %{buildroot}%{_sysconfdir}/my.cnf.d/oqgraph.cnf
 %endif
 
 %if %{without config}
@@ -1145,8 +1149,7 @@ fi
 
 %if %{with common}
 %files common
-%license COPYING
-%license storage/innobase/COPYING.Percona storage/innobase/COPYING.Google
+%license COPYING storage/innobase/COPYING.Percona storage/innobase/COPYING.Google
 %doc README README.mysql-license README.mysql-docs
 %dir %{_libdir}/mysql
 %dir %{_libdir}/mysql/plugin
@@ -1185,6 +1188,7 @@ fi
 %endif
 
 
+%if %{with galera}
 %files server-galera
 %doc Docs/README.wsrep
 %license LICENSE.clustercheck
@@ -1196,6 +1200,9 @@ fi
 %endif
 %config(noreplace) %{_sysconfdir}/my.cnf.d/galera.cnf
 %attr(0640,root,root) %ghost %config(noreplace) %{_sysconfdir}/sysconfig/clustercheck
+%{_mandir}/man1/galera_new_cluster.1.*
+%{_mandir}/man1/galera_recovery.1.*
+%endif
 
 
 %files server
@@ -1226,8 +1233,12 @@ fi
 %{_bindir}/wsrep_sst_xtrabackup
 %{_bindir}/wsrep_sst_xtrabackup-v2
 %{_bindir}/wsrep_sst_mariabackup
-%{?with_tokudb:%{_bindir}/tokuftdump}
-%{?with_tokudb:%{_bindir}/tokuft_logprint}
+%if %{with tokudb}
+%{_bindir}/tokuftdump
+%{_bindir}/tokuft_logprint
+%{_mandir}/man1/tokuftdump.1.*
+%{_mandir}/man1/tokuft_logdump.1.*
+%endif
 
 %config(noreplace) %{_sysconfdir}/my.cnf.d/%{pkg_name}-server.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/auth_gssapi.cnf
@@ -1270,12 +1281,7 @@ fi
 %{_mandir}/man1/resolveip.1*
 %{_mandir}/man1/mysql_tzinfo_to_sql.1*
 %{_mandir}/man8/mysqld.8*
-%{_mandir}/man1/galera_new_cluster.1.*
-%{_mandir}/man1/galera_recovery.1.*
 %{_mandir}/man1/mariadb-service-convert.1.*
-%{_mandir}/man1/my_safe_process.1.*
-%{_mandir}/man1/tokuft_logdump.1.*
-%{_mandir}/man1/tokuftdump.1.*
 %{_mandir}/man1/wsrep_sst_common.1.*
 %{_mandir}/man1/wsrep_sst_mysqldump.1.*
 %{_mandir}/man1/wsrep_sst_rsync.1.*
@@ -1289,8 +1295,8 @@ fi
 %{_datadir}/%{pkg_name}/mysql_system_tables.sql
 %{_datadir}/%{pkg_name}/mysql_system_tables_data.sql
 %{_datadir}/%{pkg_name}/mysql_test_data_timezone.sql
-%{_datadir}/%{pkg_name}/mysql_performance_tables.sql
 %{_datadir}/%{pkg_name}/mysql_to_mariadb.sql
+%{_datadir}/%{pkg_name}/mysql_performance_tables.sql
 %{?with_mroonga:%{_datadir}/%{pkg_name}/mroonga/install.sql}
 %{?with_mroonga:%{_datadir}/%{pkg_name}/mroonga/uninstall.sql}
 %{_datadir}/%{pkg_name}/my-*.cnf
@@ -1302,7 +1308,8 @@ fi
 %{_datadir}/%{pkg_name}/policy/apparmor/README
 %{_datadir}/%{pkg_name}/policy/apparmor/usr.sbin.mysqld*
 %{_datadir}/%{pkg_name}/policy/selinux/README
-%{_datadir}/%{pkg_name}/policy/selinux/mariadb*
+%{_datadir}/%{pkg_name}/policy/selinux/mariadb-server.*
+%{_datadir}/%{pkg_name}/policy/selinux/mariadb.*
 %{_datadir}/%{pkg_name}/systemd/mariadb.service
 %{_datadir}/%{pkg_name}/systemd/mariadb@.service
 
@@ -1398,6 +1405,7 @@ fi
 %{_bindir}/my_safe_process
 %attr(-,mysql,mysql) %{_datadir}/mysql-test
 %{_mandir}/man1/mysql_client_test.1*
+%{_mandir}/man1/my_safe_process.1.*
 %endif
 
 
@@ -1985,7 +1993,7 @@ fi
 * Thu Feb 28 2013 Honza Horak <hhorak@redhat.com> 5.5.29-7
 - Use configured prefix value instead of guessing basedir
   in mysql_config
-Resolves: #916189
+  Resolves: #916189
 - Export dynamic columns and non-blocking API functions documented
   by upstream
 
