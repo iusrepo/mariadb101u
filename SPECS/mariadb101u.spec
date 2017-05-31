@@ -930,6 +930,9 @@ rm -rf %{buildroot}%{_datadir}/%{pkg_name}/solaris/
 # rename the wsrep README so it corresponds with the other README names
 mv Docs/README-wsrep Docs/README.wsrep
 
+# remove *.jar file from mysql-test
+rm -rf %{buildroot}%{_datadir}/mysql-test/plugin/connect/connect/std_data/JdbcMariaDB.jar
+
 %if %{without clibrary}
 unlink %{buildroot}%{_libdir}/mysql/libmysqlclient.so
 unlink %{buildroot}%{_libdir}/mysql/libmysqlclient_r.so
@@ -1403,6 +1406,7 @@ fi
 - Latest upstream
 - Move non-essential utilites to server-utils subpackage (Fedora)
 - Clean up provides, conflicts, and requires
+- JdbcMariaDB.jar test removed (Fedora)
 
 * Fri May 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.23-1.ius
 - Latest upstream
