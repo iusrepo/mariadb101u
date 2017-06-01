@@ -7,8 +7,8 @@
 # --nocheck is not possible (e.g. in koji build)
 %{!?runselftest:%global runselftest 1}
 
-# Set this to 1 to see which tests fail
-%global check_testsuite 0
+# Set this to 1 to see which tests fail, but 0 on production ready build
+%global ignore_testsuite_result 0
 
 # In f20+ use unversioned docdirs, otherwise the old versioned one
 %if 0%{?rhel} && 0%{?rhel} <= 7
@@ -148,8 +148,7 @@ Source18:         mysql@.service.in
 Source19:         mysql.init.in
 Source50:         rh-skipped-tests-base.list
 Source51:         rh-skipped-tests-arm.list
-Source52:         rh-skipped-tests-ppc-s390.list
-Source53:         rh-skipped-tests-el7.list
+Source60:         rh-skipped-tests-el7.list
 Source70:         clustercheck.sh
 Source71:         LICENSE.clustercheck
 
@@ -161,6 +160,7 @@ Patch5:           %{pkgnamepatch}-file-contents.patch
 Patch7:           %{pkgnamepatch}-scripts.patch
 Patch8:           %{pkgnamepatch}-install-db-sharedir.patch
 Patch9:           %{pkgnamepatch}-ownsetup.patch
+Patch13:          %{pkgnamepatch}-ssl-cypher.patch
 Patch14:          %{pkgnamepatch}-example-config-files.patch
 
 # Patches specific for this mysql package
@@ -170,8 +170,6 @@ Patch37:          %{pkgnamepatch}-notestdb.patch
 
 # Patches for galera
 Patch40:          %{pkgnamepatch}-galera.cnf.patch
-
-Source100:        ius-skipped-tests.list
 
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
 BuildRequires:    %{cmake_name} >= 3.3.0
@@ -648,6 +646,7 @@ MariaDB is a community developed branch of MySQL.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch13 -p1
 %patch14 -p1
 %patch32 -p1
 %patch34 -p1
@@ -665,16 +664,9 @@ cat %{SOURCE50} | tee mysql-test/rh-skipped-tests.list
 cat %{SOURCE51} | tee -a mysql-test/rh-skipped-tests.list
 %endif
 
-%ifarch ppc ppc64 ppc64p7 s390 s390x
-cat %{SOURCE52} | tee -a mysql-test/rh-skipped-tests.list
+%if 0%{?rhel} && 0%{?rhel} <= 7
+cat %{SOURCE60} | tee -a mysql-test/rh-skipped-tests.list
 %endif
-
-# these tests fail on EL7
-%if 0%{?rhel} == 7
-cat %{SOURCE53} | tee -a mysql-test/rh-skipped-tests.list
-%endif
-
-cat %{SOURCE100} | tee -a mysql-test/rh-skipped-tests.list
 
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE17} %{SOURCE18} %{SOURCE19} \
@@ -1018,10 +1010,10 @@ export MTR_BUILD_THREAD=%{__isa_bits}
   set -e
   cd mysql-test
   perl ./mysql-test-run.pl --force --retry=0 --ssl \
-    --suite-timeout=720 --testcase-timeout=30 \
+    --suite-timeout=720 --testcase-timeout=30 --skip-rpl \
     --mysqld=--binlog-format=mixed --force-restart \
     --shutdown-timeout=60 --max-test-fail=0 \
-%if %{check_testsuite}
+%if %{ignore_testsuite_result}
     || :
 %else
     --skip-test-list=rh-skipped-tests.list
@@ -1414,6 +1406,7 @@ fi
 - Update mysql-prepare-db-dir.sh rhbz#1382988 (Fedora)
 - Remove patch31, resolved upstream https://github.com/MariaDB/server/commit/7c03edf
 - Remove patch41, resolved upstream https://github.com/MariaDB/server/commit/a9a38fc
+- Sync test suite with Fedora and update el7 skip list
 
 * Fri May 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.23-1.ius
 - Latest upstream

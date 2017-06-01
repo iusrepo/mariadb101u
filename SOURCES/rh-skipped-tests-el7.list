@@ -1,3 +1,35 @@
-plugins.feedback_plugin_load                    : feedback plugin fails to load on EL7
-plugins.feedback_plugin_send                    : feedback plugin fails to load on EL7
-plugins.feedback_plugin_install                 : feedback plugin fails to load on EL7
+perfschema.cnf_option                           : 10.1.23
+rpl.rpl_row_img_blobs                           : 10.1.23
+rpl.rpl_row_img_eng_min                         : 10.1.23
+rpl.rpl_row_img_eng_noblob                      : 10.1.23
+spider.basic_sql                                : 10.1.23
+spider.basic_sql_part                           : 10.1.23
+spider.direct_aggregate                         : 10.1.23
+spider.direct_aggregate_part                    : 10.1.23
+spider.direct_update                            : 10.1.23
+spider.direct_update_part                       : 10.1.23
+spider.function                                 : 10.1.23
+spider.ha                                       : 10.1.23
+spider.ha_part                                  : 10.1.23
+spider.spider3_fixes                            : 10.1.23
+spider.spider3_fixes_part                       : 10.1.23
+spider.spider_fixes                             : 10.1.23
+spider.spider_fixes_part                        : 10.1.23
+spider.vp_fixes                                 : 10.1.23
+spider/bg.basic_sql                             : 10.1.23
+spider/bg.basic_sql_part                        : 10.1.23
+spider/bg.direct_aggregate                      : 10.1.23
+spider/bg.direct_aggregate_part                 : 10.1.23
+spider/bg.direct_update                         : 10.1.23
+spider/bg.direct_update_part                    : 10.1.23
+spider/bg.function                              : 10.1.23
+spider/bg.ha                                    : 10.1.23
+spider/bg.ha_part                               : 10.1.23
+spider/bg.spider3_fixes                         : 10.1.23
+spider/bg.spider3_fixes_part                    : 10.1.23
+spider/bg.spider_fixes                          : 10.1.23
+spider/bg.spider_fixes_part                     : 10.1.23
+spider/bg.vp_fixes                              : 10.1.23
+sys_vars.log_error_func                         : 10.1.23
+sys_vars.log_error_func2                        : 10.1.23
+sys_vars.slave_parallel_threads_basic           : 10.1.23
