@@ -170,7 +170,6 @@ Patch37:          %{pkgnamepatch}-notestdb.patch
 
 # Patches for galera
 Patch40:          %{pkgnamepatch}-galera.cnf.patch
-Patch41:          %{pkgnamepatch}-galera-new-cluster-help.patch
 
 Source100:        ius-skipped-tests.list
 
@@ -654,7 +653,6 @@ MariaDB is a community developed branch of MySQL.
 %patch34 -p1
 %patch37 -p1
 %patch40 -p1
-%patch41 -p1
 
 # workaround for upstream bug #56342
 rm -f mysql-test/t/ssl_8k_key-master.opt
@@ -1415,6 +1413,7 @@ fi
 - JdbcMariaDB.jar test removed (Fedora)
 - Update mysql-prepare-db-dir.sh rhbz#1382988 (Fedora)
 - Remove patch31, resolved upstream https://github.com/MariaDB/server/commit/7c03edf
+- Remove patch41, resolved upstream https://github.com/MariaDB/server/commit/a9a38fc
 
 * Fri May 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.23-1.ius
 - Latest upstream
