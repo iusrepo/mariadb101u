@@ -164,7 +164,6 @@ Patch9:           %{pkgnamepatch}-ownsetup.patch
 Patch14:          %{pkgnamepatch}-example-config-files.patch
 
 # Patches specific for this mysql package
-Patch31:          %{pkgnamepatch}-string-overflow.patch
 Patch32:          %{pkgnamepatch}-basedir.patch
 Patch34:          %{pkgnamepatch}-covscan-stroverflow.patch
 Patch37:          %{pkgnamepatch}-notestdb.patch
@@ -651,7 +650,6 @@ MariaDB is a community developed branch of MySQL.
 %patch8 -p1
 %patch9 -p1
 %patch14 -p1
-%patch31 -p1
 %patch32 -p1
 %patch34 -p1
 %patch37 -p1
@@ -1416,6 +1414,7 @@ fi
 - Clean up provides, conflicts, and requires
 - JdbcMariaDB.jar test removed (Fedora)
 - Update mysql-prepare-db-dir.sh rhbz#1382988 (Fedora)
+- Remove patch31, resolved upstream https://github.com/MariaDB/server/commit/7c03edf
 
 * Fri May 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.23-1.ius
 - Latest upstream
