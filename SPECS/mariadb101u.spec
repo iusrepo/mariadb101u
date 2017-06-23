@@ -1209,6 +1209,7 @@ fi
 %{_bindir}/mysql_install_db
 %{_bindir}/mysql_secure_installation
 %{_bindir}/mysql_tzinfo_to_sql
+%{_bindir}/mysql_upgrade
 %{_bindir}/mysqlbug
 %{_bindir}/mysqld_safe
 %{_bindir}/innochecksum
@@ -1346,7 +1347,6 @@ fi
 %{_mandir}/man1/mysqlhotcopy.1*
 %{_mandir}/man1/mysql_setpermission.1*
 #Utilities that can be used remotely
-%{_bindir}/mysql_upgrade
 %{_bindir}/mysqltest
 %{_bindir}/perror
 %{_mandir}/man1/mysql_upgrade.1*
@@ -1398,6 +1398,9 @@ fi
 
 
 %changelog
+#stage changelog entry
+- move mysql_upgrade back to server package
+
 * Thu Jun 01 2017 Carl George <carl.george@rackspace.com> - 1:10.1.24-1.ius
 - Latest upstream
 - Move non-essential utilites to server-utils subpackage (Fedora)
