@@ -105,7 +105,11 @@
 %global logfile %{logfiledir}/%{daemon_name}.log
 
 # Directory for storing pid file
+%if 0%{?rhel} == 6
 %global pidfiledir %{_localstatedir}/run/%{daemon_name}
+%else #RHEL 6
+%global pidfiledir %{_rundir}/%{daemon_name}
+%endif
 
 # Defining where database data live
 %global dbdatadir %{_localstatedir}/lib/mysql
@@ -116,7 +120,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 24
+%global bugfixver 25
 
 Name:             mariadb101u
 Version:          %{compatver}.%{bugfixver}
@@ -130,6 +134,7 @@ URL:              http://mariadb.org
 # not only GPL code.  See README.mysql-license
 License:          GPLv2 with exceptions and LGPLv2 and BSD
 
+#Source0:          https://downloads.mariadb.org/interstitial/mariadb-%{version}/source/mariadb-%{version}.tar.gz
 Source0:          http://mirrors.syringanetworks.net/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
 Source2:          mysql_config_multilib.sh
 Source3:          my.cnf.in
@@ -182,6 +187,8 @@ BuildRequires:    multilib-rpm-config
 BuildRequires:    krb5-devel
 BuildRequires:    selinux-policy-devel
 %{?with_init_systemd:BuildRequires: systemd systemd-devel}
+# Jemalloc
+BuildRequires:    jemalloc-devel
 # Cracklib plugin
 BuildRequires:    cracklib-devel
 BuildRequires:    cracklib-dicts
@@ -394,6 +401,8 @@ Requires:         %{_sysconfdir}/my.cnf.d
 %endif
 Requires:         sh-utils
 Requires(pre):    /usr/sbin/useradd
+# Jemalloc
+Requires:         jemalloc
 %if %{with init_systemd}
 # We require this to be present for %%{_tmpfilesdir}
 Requires:         systemd
@@ -747,7 +756,7 @@ export LDFLAGS
          -DWITH_ZLIB=system \
 	 -DWITH_MARIABACKUP=no \
 %{?with_pcre: -DWITH_PCRE=system}\
-         -DWITH_JEMALLOC=no \
+         -DWITH_JEMALLOC=system \
 %{!?with_tokudb: -DWITHOUT_TOKUDB=ON}\
 %{!?with_mroonga: -DWITHOUT_MROONGA=ON}\
 %{!?with_oqgraph: -DWITHOUT_OQGRAPH=ON}\
@@ -827,7 +836,11 @@ install -D -p -m 644 scripts/mysql.service %{buildroot}%{_unitdir}/%{daemon_name
 install -D -p -m 644 scripts/mysql@.service %{buildroot}%{_unitdir}/%{daemon_name}@.service
 install -D -p -m 0644 scripts/mysql.tmpfiles.d %{buildroot}%{_tmpfilesdir}/%{daemon_name}.conf
 %if 0%{?mysqld_pid_dir:1}
+%if 0%{?rhel} == 6
 echo "d %{_localstatedir}/run/%{mysqld_pid_dir} 0755 mysql mysql -" >>%{buildroot}%{_tmpfilesdir}/%{daemon_name}.conf
+%else #RHEL 6
+echo "d %{_rundir}/%{mysqld_pid_dir} 0755 mysql mysql -" >>%{buildroot}%{_tmpfilesdir}/%{daemon_name}.conf
+%endif
 %endif
 %endif
 
@@ -894,6 +907,9 @@ install -p -m 0644 support-files/wsrep.cnf %{buildroot}%{_sysconfdir}/my.cnf.d/g
 sed -i '1i #SELinux see, https://mariadb.com/kb/en/mariadb/cracklib_password_check/#selinux' %{buildroot}%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
 sed -i 's|^plugin-load-add=cracklib_password_check.so|#plugin-load-add=cracklib_password_check.so|' %{buildroot}%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
 
+#disable gssapi by default
+sed -i 's|^plugin-load-add=auth_gssapi.so|#plugin-load-add=auth_gssapi.so|' %{buildroot}%{_sysconfdir}/my.cnf.d/auth_gssapi.cnf
+
 # install the clustercheck script
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 touch %{buildroot}%{_sysconfdir}/sysconfig/clustercheck
@@ -920,6 +936,9 @@ mv Docs/README-wsrep Docs/README.wsrep
 
 # remove *.jar file from mysql-test
 rm -rf %{buildroot}%{_datadir}/mysql-test/plugin/connect/connect/std_data/JdbcMariaDB.jar
+
+# Remove AppArmor files
+rm -r %{buildroot}%{_datadir}/%{pkg_name}/policy/apparmor
 
 %if %{without clibrary}
 unlink %{buildroot}%{_libdir}/mysql/libmysqlclient.so
@@ -1292,10 +1311,7 @@ fi
 %{_datadir}/%{pkg_name}/wsrep.cnf
 %{_datadir}/%{pkg_name}/wsrep_notify
 %dir %{_datadir}/%{pkg_name}/policy
-%dir %{_datadir}/%{pkg_name}/policy/apparmor
 %dir %{_datadir}/%{pkg_name}/policy/selinux
-%{_datadir}/%{pkg_name}/policy/apparmor/README
-%{_datadir}/%{pkg_name}/policy/apparmor/usr.sbin.mysqld*
 %{_datadir}/%{pkg_name}/policy/selinux/README
 %{_datadir}/%{pkg_name}/policy/selinux/mariadb-server.*
 %{_datadir}/%{pkg_name}/policy/selinux/mariadb.*
@@ -1398,8 +1414,19 @@ fi
 
 
 %changelog
-#stage changelog entry
-- move mysql_upgrade back to server package
+* Wed Jul 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.25-1.ius
+- Latest upstream
+- move mysql_upgrade back to server package, see #6
+- enable Jemalloc from Fedora see:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=61840ee570192f3e18e52e4a16dcfd51f181ea44
+- update mariadb-prepare-db-dir (Source12) from Fedora see:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=b23629497bb92aac2f2c374eb2ed5c18ca5f5440
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=25e7bbfef506734f6ae3f71c383cec97063dc6a5
+- Use "/run" location instead of "/var/run" symlink, from Fedora see:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=570e5a390abdd724a9c0e060c70c7198b519541c
+- remove apparmor from Fedora see:
+  http://pkgs.fedoraproject.org/cgit/rpms/mariadb.git/commit/?id=570e5a390abdd724a9c0e060c70c7198b519541c
+- disable gssapi by default
 
 * Thu Jun 01 2017 Carl George <carl.george@rackspace.com> - 1:10.1.24-1.ius
 - Latest upstream
