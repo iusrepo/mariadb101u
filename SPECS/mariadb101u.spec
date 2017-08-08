@@ -124,7 +124,7 @@
 
 Name:             mariadb101u
 Version:          %{compatver}.%{bugfixver}
-Release:          1.ius%{?dist}
+Release:          2.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -1231,6 +1231,7 @@ fi
 %{_bindir}/mysql_upgrade
 %{_bindir}/mysqlbug
 %{_bindir}/mysqld_safe
+%{_bindir}/mysqld_safe_helper
 %{_bindir}/innochecksum
 %{_bindir}/replace
 %{_bindir}/resolve_stack_dump
@@ -1283,6 +1284,7 @@ fi
 %{_mandir}/man1/mysql_secure_installation.1*
 %{_mandir}/man1/mysqlbug.1*
 %{_mandir}/man1/mysqld_safe.1*
+%{_mandir}/man1/mysqld_safe_helper.1.*
 %{_mandir}/man1/innochecksum.1*
 %{_mandir}/man1/replace.1*
 %{_mandir}/man1/resolve_stack_dump.1*
@@ -1368,9 +1370,6 @@ fi
 %{_mandir}/man1/mysql_upgrade.1*
 %{_mandir}/man1/mysqltest.1*
 %{_mandir}/man1/perror.1*
-#Other utilities
-%{_bindir}/mysqld_safe_helper
-%{_mandir}/man1/mysqld_safe_helper.1.*
 
 
 %if %{with devel}
@@ -1414,6 +1413,9 @@ fi
 
 
 %changelog
+* Tue Aug 08 2017 Carl George <carl@george.computer> - 1:10.1.25-2.ius
+- Move mysqld_safe_helper to the server subpackage
+
 * Wed Jul 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.25-1.ius
 - Latest upstream
 - move mysql_upgrade back to server package, see #6
