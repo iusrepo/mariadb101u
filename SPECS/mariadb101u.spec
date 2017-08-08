@@ -1282,6 +1282,7 @@ fi
 %{_mandir}/man1/mysql.server.1*
 %{_mandir}/man1/mysql_install_db.1*
 %{_mandir}/man1/mysql_secure_installation.1*
+%{_mandir}/man1/mysql_upgrade.1*
 %{_mandir}/man1/mysqlbug.1*
 %{_mandir}/man1/mysqld_safe.1*
 %{_mandir}/man1/mysqld_safe_helper.1.*
@@ -1367,7 +1368,6 @@ fi
 #Utilities that can be used remotely
 %{_bindir}/mysqltest
 %{_bindir}/perror
-%{_mandir}/man1/mysql_upgrade.1*
 %{_mandir}/man1/mysqltest.1*
 %{_mandir}/man1/perror.1*
 
@@ -1415,6 +1415,7 @@ fi
 %changelog
 * Tue Aug 08 2017 Carl George <carl@george.computer> - 1:10.1.25-2.ius
 - Move mysqld_safe_helper to the server subpackage
+- Move mysql_upgrade man page to server subpackage
 
 * Wed Jul 05 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.25-1.ius
 - Latest upstream
