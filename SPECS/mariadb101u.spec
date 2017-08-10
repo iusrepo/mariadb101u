@@ -120,11 +120,11 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 25
+%global bugfixver 26
 
 Name:             mariadb101u
 Version:          %{compatver}.%{bugfixver}
-Release:          2.ius%{?dist}
+Release:          1.ius%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
@@ -170,7 +170,6 @@ Patch14:          %{pkgnamepatch}-example-config-files.patch
 
 # Patches specific for this mysql package
 Patch32:          %{pkgnamepatch}-basedir.patch
-Patch34:          %{pkgnamepatch}-covscan-stroverflow.patch
 Patch37:          %{pkgnamepatch}-notestdb.patch
 
 # Patches for galera
@@ -658,7 +657,6 @@ MariaDB is a community developed branch of MySQL.
 %patch13 -p1
 %patch14 -p1
 %patch32 -p1
-%patch34 -p1
 %patch37 -p1
 %patch40 -p1
 
@@ -1413,6 +1411,11 @@ fi
 
 
 %changelog
+* Thu Aug 10 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.26-1.ius
+- Latest upstream
+- rebase Patch7
+- remove Patch34, patched upstream
+
 * Tue Aug 08 2017 Carl George <carl@george.computer> - 1:10.1.25-2.ius
 - Move mysqld_safe_helper to the server subpackage
 - Move mysql_upgrade man page to server subpackage
