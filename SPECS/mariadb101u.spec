@@ -120,7 +120,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 27
+%global bugfixver 28
 
 Name:             mariadb101u
 Version:          %{compatver}.%{bugfixver}
@@ -1405,6 +1405,9 @@ fi
 
 
 %changelog
+* Thu Sep 28 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.28-1.ius
+- Latest upstream
+
 * Tue Sep 26 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.27-1.ius
 - Latest upstream
 - Remove mysql-wait-* scripts, from Fedora:
