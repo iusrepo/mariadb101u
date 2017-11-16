@@ -999,6 +999,12 @@ rm -f %{buildroot}%{_mandir}/man1/mysql_client_test.1*
 %endif
 
 
+%if %{with mroonga}
+rm -rf %{buildroot}%{_datadir}/%{pkg_name}/mroonga/{AUTHORS,COPYING}
+rm -rf %{buildroot}%{_datadir}/groonga-normalizer-mysql
+rm -rf %{buildroot}%{_datadir}/groonga
+%endif
+
 %check
 %if %{with test}
 %if %runselftest
@@ -1407,6 +1413,7 @@ fi
 - Latest upstream
 - Remove Patch2, fixed upstream
 - update Patch8
+- remove unnecessary mroonga files
 
 * Thu Sep 28 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.28-1.ius
 - Latest upstream
