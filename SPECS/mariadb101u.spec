@@ -735,7 +735,7 @@ export LDFLAGS
          -DMYSQL_DATADIR="%{dbdatadir}" \
          -DMYSQL_UNIX_ADDR="%{_localstatedir}/lib/mysql/mysql.sock" \
          -DENABLED_LOCAL_INFILE=ON \
-         -DENABLE_DTRACE=ON \
+         -DENABLE_DTRACE=OFF \
          -DWITH_EMBEDDED_SERVER=ON \
          -DWITH_READLINE=ON \
          -DWITH_SSL=system \
@@ -1404,6 +1404,7 @@ fi
 * Thu Jan 04 2018 Carl George <carl@george.computer> - 1:10.1.30-1.ius
 - Latest upstream
 - Server dependency changed from 'sh-utils' to 'coreutils' (Fedora)
+- Disable DTrace (Fedora)
 
 * Wed Nov 15 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.29-1.ius
 - Latest upstream
