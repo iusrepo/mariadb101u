@@ -784,6 +784,8 @@ done
 if %multilib_capable; then
 mv %{buildroot}%{_bindir}/mysql_config %{buildroot}%{_bindir}/mysql_config-%{__isa_bits}
 install -p -m 0755 scripts/mysql_config_multilib %{buildroot}%{_bindir}/mysql_config
+# Copy manual page for multilib mysql_config; https://jira.mariadb.org/browse/MDEV-11961
+ln -s mysql_config.1 %{buildroot}%{_mandir}/man1/mysql_config-%{__isa_bits}.1
 fi
 
 # Upstream install this into arch-independent directory, TODO: report
@@ -1370,7 +1372,7 @@ fi
 %{_libdir}/mysql/libmysqlclient.so
 %{_libdir}/mysql/libmysqlclient_r.so
 %endif
-%{_mandir}/man1/mysql_config.1*
+%{_mandir}/man1/mysql_config*
 %endif
 
 %if %{with embedded}
@@ -1405,6 +1407,7 @@ fi
 - Latest upstream
 - Server dependency changed from 'sh-utils' to 'coreutils' (Fedora)
 - Disable DTrace (Fedora)
+- Multilib manpage added (Fedora)
 
 * Wed Nov 15 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.29-1.ius
 - Latest upstream
