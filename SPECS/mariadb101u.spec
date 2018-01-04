@@ -10,13 +10,6 @@
 # Set this to 1 to see which tests fail, but 0 on production ready build
 %global ignore_testsuite_result 0
 
-# In f20+ use unversioned docdirs, otherwise the old versioned one
-%if 0%{?rhel} && 0%{?rhel} <= 7
-%global _pkgdocdirname %{name}-%{version}
-%else
-%global _pkgdocdirname %{name}
-%endif
-
 # Use Full RELRO for all binaries (RHBZ#1092548)
 %global _hardened_build 1
 
@@ -233,9 +226,6 @@ Conflicts:        mariadb < %{sameevr}
 %filter_provides_in -P (%{_datadir}/(mysql|mysql-test)/.*|%{_libdir}/mysql/plugin/.*\.so)
 %filter_setup
 %endif
-
-# Define license macro if not present
-%{!?_licensedir:%global license %doc}
 
 
 %description
@@ -649,10 +639,10 @@ MariaDB is a community developed branch of MySQL.
 %patch40 -p1
 
 # workaround for upstream bug #56342
-rm -f mysql-test/t/ssl_8k_key-master.opt
+rm mysql-test/t/ssl_8k_key-master.opt
 
 # generate a list of tests that fail, but are not disabled by upstream
-cat %{SOURCE50} | tee mysql-test/rh-skipped-tests.list
+cat %{SOURCE50} | tee -a mysql-test/rh-skipped-tests.list
 
 # disable some tests failing on different architectures
 %ifarch %{arm} aarch64
@@ -663,7 +653,7 @@ cat %{SOURCE51} | tee -a mysql-test/rh-skipped-tests.list
 cat %{SOURCE60} | tee -a mysql-test/rh-skipped-tests.list
 %endif
 
-cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12}  \
+cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE18} %{SOURCE19} \
    %{SOURCE70} scripts
 
@@ -683,8 +673,6 @@ cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12}  \
 CFLAGS="%{optflags} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE"
 # force PIC mode so that we can build libmysqld.so
 CFLAGS="$CFLAGS -fPIC"
-# GCC 4.9 causes segfaults: https://mariadb.atlassian.net/browse/MDEV-6360
-CFLAGS="$CFLAGS -fno-delete-null-pointer-checks"
 # gcc seems to have some bugs on sparc as of 4.4.1, back off optimization
 # submitted as bz #529298
 %ifarch sparc sparcv9 sparc64
@@ -719,8 +707,8 @@ export LDFLAGS
          -DCMAKE_INSTALL_PREFIX="%{_prefix}" \
          -DINSTALL_SYSCONFDIR="%{_sysconfdir}" \
          -DINSTALL_SYSCONF2DIR="%{_sysconfdir}/my.cnf.d" \
-         -DINSTALL_DOCDIR="share/doc/%{_pkgdocdirname}" \
-         -DINSTALL_DOCREADMEDIR="share/doc/%{_pkgdocdirname}" \
+         -DINSTALL_DOCDIR="share/doc/%{name}%{?rhel:-%{version}}" \
+         -DINSTALL_DOCREADMEDIR="share/doc/%{name}%{?rhel:-%{version}}" \
          -DINSTALL_INCLUDEDIR=include/mysql \
          -DINSTALL_INFODIR=share/info \
          -DINSTALL_LIBDIR="%{_lib}/mysql" \
@@ -811,8 +799,8 @@ install -p -m 0755 -d %{buildroot}%{dbdatadir}
 %if %{with config}
 install -D -p -m 0644 scripts/my.cnf %{buildroot}%{_sysconfdir}/my.cnf
 %else
-rm -f %{buildroot}%{_sysconfdir}/my.cnf.d/mysql-clients.cnf
-rm -f %{buildroot}%{_sysconfdir}/my.cnf
+rm %{buildroot}%{_sysconfdir}/my.cnf.d/mysql-clients.cnf
+rm %{buildroot}%{_sysconfdir}/my.cnf
 %endif
 
 # use different config file name for each variant of server
@@ -844,13 +832,13 @@ install -p -m 755 scripts/mysql-check-upgrade %{buildroot}%{_libexecdir}/mysql-c
 install -p -m 644 scripts/mysql-scripts-common %{buildroot}%{_libexecdir}/mysql-scripts-common
 
 # Remove libmysqld.a
-rm -f %{buildroot}%{_libdir}/mysql/libmysqld.a
+rm %{buildroot}%{_libdir}/mysql/libmysqld.a
 
 # libmysqlclient_r is no more.  Upstream tries to replace it with symlinks
 # but that really doesn't work (wrong soname in particular).  We'll keep
 # just the devel libmysqlclient_r.so link, so that rebuilding without any
 # source change is enough to get rid of dependency on libmysqlclient_r.
-rm -f %{buildroot}%{_libdir}/mysql/libmysqlclient_r.so*
+rm %{buildroot}%{_libdir}/mysql/libmysqlclient_r.so*
 ln -s libmysqlclient.so %{buildroot}%{_libdir}/mysql/libmysqlclient_r.so
 
 # mysql-test includes one executable that doesn't belong under /usr/share,
@@ -859,16 +847,15 @@ mv %{buildroot}%{_datadir}/mysql-test/lib/My/SafeProcess/my_safe_process %{build
 ln -s ../../../../../bin/my_safe_process %{buildroot}%{_datadir}/mysql-test/lib/My/SafeProcess/my_safe_process
 
 # should move this to /etc/ ?
-rm -f %{buildroot}%{_bindir}/mysql_embedded
-rm -f %{buildroot}%{_libdir}/mysql/*.a
-rm -f %{buildroot}%{_datadir}/%{pkg_name}/binary-configure
-rm -f %{buildroot}%{_datadir}/%{pkg_name}/magic
-rm -f %{buildroot}%{_datadir}/%{pkg_name}/ndb-config-2-node.ini
-rm -f %{buildroot}%{_datadir}/%{pkg_name}/mysql.server
-rm -f %{buildroot}%{_datadir}/%{pkg_name}/mysqld_multi.server
-rm -f %{buildroot}%{_mandir}/man1/mysql-stress-test.pl.1*
-rm -f %{buildroot}%{_mandir}/man1/mysql-test-run.pl.1*
-rm -f %{buildroot}%{_bindir}/mytop
+rm %{buildroot}%{_bindir}/mysql_embedded
+rm %{buildroot}%{_libdir}/mysql/*.a
+rm %{buildroot}%{_datadir}/%{pkg_name}/binary-configure
+rm %{buildroot}%{_datadir}/%{pkg_name}/magic
+rm %{buildroot}%{_datadir}/%{pkg_name}/mysql.server
+rm %{buildroot}%{_datadir}/%{pkg_name}/mysqld_multi.server
+rm %{buildroot}%{_mandir}/man1/mysql-stress-test.pl.1*
+rm %{buildroot}%{_mandir}/man1/mysql-test-run.pl.1*
+rm %{buildroot}%{_bindir}/mytop
 
 # put logrotate script where it needs to be
 mkdir -p %{buildroot}%{logrotateddir}
@@ -889,13 +876,6 @@ install -p -m 0644 %{SOURCE71} %{basename:%{SOURCE71}}
 sed -i -r 's|^wsrep_provider=none|wsrep_provider=%{_libdir}/galera/libgalera_smm.so|' support-files/wsrep.cnf
 install -p -m 0644 support-files/wsrep.cnf %{buildroot}%{_sysconfdir}/my.cnf.d/galera.cnf
 
-# disable Cracklib by default
-sed -i '1i #SELinux see, https://mariadb.com/kb/en/mariadb/cracklib_password_check/#selinux' %{buildroot}%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
-sed -i 's|^plugin-load-add=cracklib_password_check.so|#plugin-load-add=cracklib_password_check.so|' %{buildroot}%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
-
-#disable gssapi by default
-sed -i 's|^plugin-load-add=auth_gssapi.so|#plugin-load-add=auth_gssapi.so|' %{buildroot}%{_sysconfdir}/my.cnf.d/auth_gssapi.cnf
-
 # install the clustercheck script
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 touch %{buildroot}%{_sysconfdir}/sysconfig/clustercheck
@@ -904,92 +884,90 @@ install -p -m 0755 scripts/clustercheck %{buildroot}%{_bindir}/clustercheck
 # install the list of skipped tests to be available for user runs
 install -p -m 0644 mysql-test/rh-skipped-tests.list %{buildroot}%{_datadir}/mysql-test
 
-# remove unneeded RHEL-4 SELinux stuff
-rm -rf %{buildroot}%{_datadir}/%{pkg_name}/SELinux/
-
 # remove SysV init script and a symlink to that
-rm -f %{buildroot}%{_sysconfdir}/init.d/mysql
-rm -f %{buildroot}%{_libexecdir}/rcmysql
+rm %{buildroot}%{_sysconfdir}/init.d/mysql
+rm %{buildroot}%{_libexecdir}/rcmysql
 
 # remove duplicate logrotate script
-rm -f %{buildroot}%{logrotateddir}/mysql
-
-# remove solaris files
-rm -rf %{buildroot}%{_datadir}/%{pkg_name}/solaris/
+rm %{buildroot}%{logrotateddir}/mysql
 
 # rename the wsrep README so it corresponds with the other README names
 mv Docs/README-wsrep Docs/README.wsrep
 
 # remove *.jar file from mysql-test
-rm -rf %{buildroot}%{_datadir}/mysql-test/plugin/connect/connect/std_data/JdbcMariaDB.jar
+rm -r %{buildroot}%{_datadir}/mysql-test/plugin/connect/connect/std_data/JdbcMariaDB.jar
 
 # Remove AppArmor files
 rm -r %{buildroot}%{_datadir}/%{pkg_name}/policy/apparmor
 
+# Disable plugins
+sed -i 's/^plugin-load-add/#plugin-load-add/' %{buildroot}%{_sysconfdir}/my.cnf.d/auth_gssapi.cnf
+sed -i 's/^plugin-load-add/#plugin-load-add/' %{buildroot}%{_sysconfdir}/my.cnf.d/cracklib_password_check.cnf
+
 %if %{without clibrary}
 unlink %{buildroot}%{_libdir}/mysql/libmysqlclient.so
 unlink %{buildroot}%{_libdir}/mysql/libmysqlclient_r.so
-rm -rf %{buildroot}%{_libdir}/mysql/libmysqlclient*.so.*
-rm -rf %{buildroot}%{_sysconfdir}/ld.so.conf.d
-rm -f %{buildroot}%{_sysconfdir}/my.cnf.d/client.cnf
+rm -r %{buildroot}%{_libdir}/mysql/libmysqlclient*.so.*
+rm -r %{buildroot}%{_sysconfdir}/ld.so.conf.d
+rm %{buildroot}%{_sysconfdir}/my.cnf.d/client.cnf
 %endif
 
 %if %{without embedded}
-rm -f %{buildroot}%{_libdir}/mysql/libmysqld.so*
-rm -f %{buildroot}%{_bindir}/{mysql_client_test_embedded,mysqltest_embedded}
-rm -f %{buildroot}%{_mandir}/man1/{mysql_client_test_embedded,mysqltest_embedded}.1*
+rm %{buildroot}%{_libdir}/mysql/libmysqld.so*
+rm %{buildroot}%{_bindir}/{mysql_client_test_embedded,mysqltest_embedded}
+rm %{buildroot}%{_mandir}/man1/{mysql_client_test_embedded,mysqltest_embedded}.1*
 %endif
 
 %if %{without devel}
-rm -f %{buildroot}%{_bindir}/mysql_config*
-rm -rf %{buildroot}%{_includedir}/mysql
-rm -f %{buildroot}%{_datadir}/aclocal/mysql.m4
-rm -f %{buildroot}%{_libdir}/pkgconfig/mariadb.pc
-rm -f %{buildroot}%{_libdir}/mysql/libmysqlclient*.so
-rm -f %{buildroot}%{_mandir}/man1/mysql_config.1*
+rm %{buildroot}%{_bindir}/mysql_config*
+rm -r %{buildroot}%{_includedir}/mysql
+rm %{buildroot}%{_datadir}/aclocal/mysql.m4
+rm %{buildroot}%{_libdir}/pkgconfig/mariadb.pc
+rm %{buildroot}%{_libdir}/mysql/libmysqlclient*.so
+rm %{buildroot}%{_mandir}/man1/mysql_config.1*
 %endif
 
 %if %{without client}
-rm -f %{buildroot}%{_bindir}/{msql2mysql,mysql,mysql_find_rows,\
+rm %{buildroot}%{_bindir}/{msql2mysql,mysql,mysql_find_rows,\
 mysql_plugin,mysql_waitpid,mysqlaccess,mysqladmin,mysqlbinlog,mysqlcheck,\
 mysqldump,mysqlimport,mysqlshow,mysqlslap,my_print_defaults}
-rm -f %{buildroot}%{_mandir}/man1/{msql2mysql,mysql,mysql_find_rows,\
+rm %{buildroot}%{_mandir}/man1/{msql2mysql,mysql,mysql_find_rows,\
 mysql_plugin,mysql_waitpid,mysqlaccess,mysqladmin,mysqlbinlog,mysqlcheck,\
 mysqldump,mysqlimport,mysqlshow,mysqlslap,my_print_defaults}.1*
 %endif
 
 %if %{without connect}
-rm -f %{buildroot}%{_sysconfdir}/my.cnf.d/connect.cnf
+rm %{buildroot}%{_sysconfdir}/my.cnf.d/connect.cnf
 %endif
 
 %if %{without oqgraph}
-rm -f %{buildroot}%{_sysconfdir}/my.cnf.d/oqgraph.cnf
+rm %{buildroot}%{_sysconfdir}/my.cnf.d/oqgraph.cnf
 %endif
 
 %if %{without config}
-rm -f %{buildroot}%{_sysconfdir}/my.cnf
-rm -f %{buildroot}%{_sysconfdir}/my.cnf.d/mysql-clients.cnf
+rm %{buildroot}%{_sysconfdir}/my.cnf
+rm %{buildroot}%{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 %endif
 
 %if %{without common}
-rm -rf %{buildroot}%{_datadir}/%{pkg_name}/charsets
+rm -r %{buildroot}%{_datadir}/%{pkg_name}/charsets
 %endif
 
 %if %{without errmsg}
-rm -f %{buildroot}%{_datadir}/%{pkg_name}/errmsg-utf8.txt
-rm -rf %{buildroot}%{_datadir}/%{pkg_name}/{english,czech,danish,dutch,estonian,\
+rm %{buildroot}%{_datadir}/%{pkg_name}/errmsg-utf8.txt
+rm -r %{buildroot}%{_datadir}/%{pkg_name}/{english,czech,danish,dutch,estonian,\
 french,german,greek,hungarian,italian,japanese,korean,norwegian,norwegian-ny,\
 polish,portuguese,romanian,russian,serbian,slovak,spanish,swedish,ukrainian}
 %endif
 
 %if %{without bench}
-rm -rf %{buildroot}%{_datadir}/sql-bench
+rm -r %{buildroot}%{_datadir}/sql-bench
 %endif
 
 %if %{without test}
-rm -f %{buildroot}%{_bindir}/{mysql_client_test,my_safe_process}
-rm -rf %{buildroot}%{_datadir}/mysql-test
-rm -f %{buildroot}%{_mandir}/man1/mysql_client_test.1*
+rm %{buildroot}%{_bindir}/{mysql_client_test,my_safe_process}
+rm -r %{buildroot}%{_datadir}/mysql-test
+rm %{buildroot}%{_mandir}/man1/mysql_client_test.1*
 %endif
 
 
@@ -1023,8 +1001,6 @@ export MTR_BUILD_THREAD=%{__isa_bits}
 %else
     --skip-test-list=rh-skipped-tests.list
 %endif
-  # cmake build scripts will install the var cruft if left alone :-(
-  rm -rf var
 )
 %endif
 %endif
@@ -1193,8 +1169,8 @@ fi
 %endif
 %config(noreplace) %{_sysconfdir}/my.cnf.d/galera.cnf
 %attr(0640,root,root) %ghost %config(noreplace) %{_sysconfdir}/sysconfig/clustercheck
-%{_mandir}/man1/galera_new_cluster.1.*
-%{_mandir}/man1/galera_recovery.1.*
+%{_mandir}/man1/galera_new_cluster.1*
+%{_mandir}/man1/galera_recovery.1*
 %endif
 
 
@@ -1231,8 +1207,8 @@ fi
 %if %{with tokudb}
 %{_bindir}/tokuftdump
 %{_bindir}/tokuft_logprint
-%{_mandir}/man1/tokuftdump.1.*
-%{_mandir}/man1/tokuft_logdump.1.*
+%{_mandir}/man1/tokuftdump.1*
+%{_mandir}/man1/tokuft_logdump.1*
 %endif
 
 %config(noreplace) %{_sysconfdir}/my.cnf.d/%{pkg_name}-server.cnf
@@ -1271,19 +1247,19 @@ fi
 %{_mandir}/man1/mysql_upgrade.1*
 %{_mandir}/man1/mysqlbug.1*
 %{_mandir}/man1/mysqld_safe.1*
-%{_mandir}/man1/mysqld_safe_helper.1.*
+%{_mandir}/man1/mysqld_safe_helper.1*
 %{_mandir}/man1/innochecksum.1*
 %{_mandir}/man1/replace.1*
 %{_mandir}/man1/resolve_stack_dump.1*
 %{_mandir}/man1/resolveip.1*
 %{_mandir}/man1/mysql_tzinfo_to_sql.1*
 %{_mandir}/man8/mysqld.8*
-%{_mandir}/man1/mariadb-service-convert.1.*
-%{_mandir}/man1/wsrep_sst_common.1.*
-%{_mandir}/man1/wsrep_sst_mysqldump.1.*
-%{_mandir}/man1/wsrep_sst_rsync.1.*
-%{_mandir}/man1/wsrep_sst_xtrabackup-v2.1.*
-%{_mandir}/man1/wsrep_sst_xtrabackup.1.*
+%{_mandir}/man1/mariadb-service-convert.1*
+%{_mandir}/man1/wsrep_sst_common.1*
+%{_mandir}/man1/wsrep_sst_mysqldump.1*
+%{_mandir}/man1/wsrep_sst_rsync.1*
+%{_mandir}/man1/wsrep_sst_xtrabackup-v2.1*
+%{_mandir}/man1/wsrep_sst_xtrabackup.1*
 
 %{_datadir}/%{pkg_name}/fill_help_tables.sql
 %{_datadir}/%{pkg_name}/install_spider.sql
@@ -1400,7 +1376,7 @@ fi
 %{_bindir}/my_safe_process
 %attr(-,mysql,mysql) %{_datadir}/mysql-test
 %{_mandir}/man1/mysql_client_test.1*
-%{_mandir}/man1/my_safe_process.1.*
+%{_mandir}/man1/my_safe_process.1*
 %endif
 
 
