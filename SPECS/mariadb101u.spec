@@ -391,7 +391,7 @@ Requires:         %{name}-config%{?_isa} = %{sameevr}
 Requires:         %{_sysconfdir}/my.cnf
 Requires:         %{_sysconfdir}/my.cnf.d
 %endif
-Requires:         sh-utils
+Requires:         coreutils
 Requires(pre):    /usr/sbin/useradd
 # Jemalloc
 Requires:         jemalloc
@@ -404,7 +404,7 @@ Requires(posttrans): systemd
 %{?systemd_requires: %systemd_requires}
 %endif
 # wsrep requirements
-Requires:         lsof net-tools sh-utils rsync
+Requires:         lsof net-tools rsync
 
 # other package names
 Conflicts:        MariaDB-server
@@ -1403,6 +1403,7 @@ fi
 %changelog
 * Thu Jan 04 2018 Carl George <carl@george.computer> - 1:10.1.30-1.ius
 - Latest upstream
+- Server dependency changed from 'sh-utils' to 'coreutils' (Fedora)
 
 * Wed Nov 15 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.29-1.ius
 - Latest upstream
