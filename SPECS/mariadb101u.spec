@@ -993,12 +993,6 @@ rm -f %{buildroot}%{_mandir}/man1/mysql_client_test.1*
 %endif
 
 
-%if %{with mroonga}
-rm -rf %{buildroot}%{_datadir}/%{pkg_name}/mroonga/{AUTHORS,COPYING}
-rm -rf %{buildroot}%{_datadir}/groonga-normalizer-mysql
-rm -rf %{buildroot}%{_datadir}/groonga
-%endif
-
 %check
 %if %{with test}
 %if %runselftest
@@ -1300,8 +1294,16 @@ fi
 %{_datadir}/%{pkg_name}/mysql_test_data_timezone.sql
 %{_datadir}/%{pkg_name}/mysql_to_mariadb.sql
 %{_datadir}/%{pkg_name}/mysql_performance_tables.sql
-%{?with_mroonga:%{_datadir}/%{pkg_name}/mroonga/install.sql}
-%{?with_mroonga:%{_datadir}/%{pkg_name}/mroonga/uninstall.sql}
+%if %{with mroonga}
+%{_datadir}/%{pkg_name}/mroonga/install.sql
+%{_datadir}/%{pkg_name}/mroonga/uninstall.sql
+%license %{_datadir}/%{pkg_name}/mroonga/COPYING
+%license %{_datadir}/%{pkg_name}/mroonga/AUTHORS
+%license %{_datadir}/groonga-normalizer-mysql/lgpl-2.0.txt
+%license %{_datadir}/groonga/COPYING
+%doc %{_datadir}/groonga-normalizer-mysql/README.md
+%doc %{_datadir}/groonga/README.md
+%endif
 %{_datadir}/%{pkg_name}/my-*.cnf
 %{_datadir}/%{pkg_name}/wsrep.cnf
 %{_datadir}/%{pkg_name}/wsrep_notify
@@ -1408,6 +1410,7 @@ fi
 - Server dependency changed from 'sh-utils' to 'coreutils' (Fedora)
 - Disable DTrace (Fedora)
 - Multilib manpage added (Fedora)
+- Include mroonga licenses and docs
 
 * Wed Nov 15 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.29-1.ius
 - Latest upstream
