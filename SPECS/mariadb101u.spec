@@ -161,6 +161,8 @@ Patch37:          %{pkgnamepatch}-notestdb.patch
 # Patches for galera
 Patch40:          %{pkgnamepatch}-galera.cnf.patch
 
+Patch100:         %{pkgnamepatch}-remove-sysusers-tmpfiles.patch
+
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
 BuildRequires:    %{cmake_name} >= 3.3.0
 BuildRequires:    libaio-devel
@@ -637,6 +639,7 @@ MariaDB is a community developed branch of MySQL.
 %patch13 -p1
 %patch37 -p1
 %patch40 -p1
+%patch100 -p1
 
 # workaround for upstream bug #56342
 rm mysql-test/t/ssl_8k_key-master.opt
@@ -1387,6 +1390,7 @@ fi
 - Disable DTrace (Fedora)
 - Multilib manpage added (Fedora)
 - Include mroonga licenses and docs
+- Add patch100 to remove sysusers and tmpfiles config files
 
 * Wed Nov 15 2017 Ben Harper <ben.harper@rackspace.com> - 1:10.1.29-1.ius
 - Latest upstream
