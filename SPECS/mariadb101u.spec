@@ -113,7 +113,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 30
+%global bugfixver 31
 
 Name:             mariadb101u
 Version:          %{compatver}.%{bugfixver}
@@ -739,7 +739,7 @@ export LDFLAGS
 %{!?with_oqgraph: -DWITHOUT_OQGRAPH=ON}\
          -DTMPDIR=/var/tmp \
 %{?with_debug: -DCMAKE_BUILD_TYPE=Debug}\
-         %{?_hardened_build:-DWITH_MYSQLD_LDFLAGS="-pie -Wl,-z,relro,-z,now"}
+%{?_hardened_build:-DWITH_MYSQLD_LDFLAGS="-pie -Wl,-z,relro,-z,now"}
 
 make %{?_smp_mflags} VERBOSE=1
 
@@ -1321,7 +1321,7 @@ fi
 
 
 %files server-utils
-#Perl utilities
+# Perl utilities
 %{_bindir}/mysql_convert_table_format
 %{_bindir}/mysql_fix_extensions
 %{_bindir}/mysql_setpermission
@@ -1336,7 +1336,7 @@ fi
 %{_mandir}/man1/mysqld_multi.1*
 %{_mandir}/man1/mysqlhotcopy.1*
 %{_mandir}/man1/mysql_setpermission.1*
-#Utilities that can be used remotely
+# Utilities that can be used remotely
 %{_bindir}/mysqltest
 %{_bindir}/perror
 %{_mandir}/man1/mysqltest.1*
@@ -1384,6 +1384,9 @@ fi
 
 
 %changelog
+* Wed Feb 07 2018 Carl George <carl@george.computer> - 1:10.1.31-1.ius
+- Latest upstream
+
 * Thu Jan 04 2018 Carl George <carl@george.computer> - 1:10.1.30-1.ius
 - Latest upstream
 - Server dependency changed from 'sh-utils' to 'coreutils' (Fedora)
