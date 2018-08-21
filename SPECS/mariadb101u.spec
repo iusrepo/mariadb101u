@@ -113,7 +113,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 32
+%global bugfixver 35
 
 Name:             mariadb101u
 Version:          %{compatver}.%{bugfixver}
@@ -157,9 +157,6 @@ Patch13:          %{pkgnamepatch}-ssl-cypher.patch
 
 # Patches specific for this mysql package
 Patch37:          %{pkgnamepatch}-notestdb.patch
-
-# Patches for galera
-Patch40:          %{pkgnamepatch}-galera.cnf.patch
 
 Patch100:         %{pkgnamepatch}-remove-sysusers-tmpfiles.patch
 
@@ -638,7 +635,6 @@ MariaDB is a community developed branch of MySQL.
 %patch9 -p1
 %patch13 -p1
 %patch37 -p1
-%patch40 -p1
 %patch100 -p1
 
 # workaround for upstream bug #56342
@@ -1204,6 +1200,7 @@ fi
 %{_bindir}/wsrep_sst_common
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
+%{_bindir}/wsrep_sst_rsync_wan
 %{_bindir}/wsrep_sst_xtrabackup
 %{_bindir}/wsrep_sst_xtrabackup-v2
 %{_bindir}/wsrep_sst_mariabackup
@@ -1384,6 +1381,9 @@ fi
 
 
 %changelog
+* Tue Aug 21 2018 Steve Mokris <smokris@softpixel.com> - 1:10.1.35-1.ius
+- Latest upstream
+
 * Fri May 04 2018 Carl George <carl@george.computer> - 1:10.1.32-1.ius
 - Latest upstream
 

@@ -1,9 +1,10 @@
---- mariadb-10.1.27/scripts/CMakeLists.txt	2017-09-22 15:02:31.000000000 +0000
-+++ mariadb-10.1.27/scripts/CMakeLists.txt.patch	2017-09-26 13:23:17.763246549 +0000
-@@ -375,6 +375,32 @@
+--- mariadb-10.1.35/scripts/CMakeLists.txt	2018-08-21 12:21:56.905183392 -0400
++++ mariadb-10.1.35/scripts/CMakeLists.txt	2018-08-21 12:21:59.693059936 -0400
+@@ -397,6 +397,33 @@
+       COMPONENT ${${file}_COMPONENT}
       )
    ENDFOREACH()
- 
++
 +  # files for systemd
 +  SET(SYSTEMD_SCRIPTS
 +    mysql.tmpfiles.d
