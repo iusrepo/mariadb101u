@@ -113,7 +113,7 @@
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
 %global compatver 10.1
-%global bugfixver 35
+%global bugfixver 38
 
 Name:             mariadb101u
 Version:          %{compatver}.%{bugfixver}
@@ -1381,6 +1381,9 @@ fi
 
 
 %changelog
+* Wed Apr 24 2019 evitalis <evitalis@users.noreply.github.com> - 1:10.1.38-1.ius
+- Latest upstream
+
 * Tue Aug 21 2018 Steve Mokris <smokris@softpixel.com> - 1:10.1.35-1.ius
 - Latest upstream
 
