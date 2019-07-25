@@ -57,7 +57,7 @@
 %bcond_without config
 
 # For deep debugging we need to build binaries with extra debug info
-%bcond_with debug
+%bcond_with    debug
 
 # Include files for SysV init or systemd
 %if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
@@ -96,38 +96,31 @@
 %global logrotateddir %{_sysconfdir}/logrotate.d
 %global logfiledir %{_localstatedir}/log/%{daemon_name}
 %global logfile %{logfiledir}/%{daemon_name}.log
-
 # Directory for storing pid file
 %if 0%{?rhel} == 6
 %global pidfiledir %{_localstatedir}/run/%{daemon_name}
 %else #RHEL 6
 %global pidfiledir %{_rundir}/%{daemon_name}
 %endif
-
 # Defining where database data live
 %global dbdatadir %{_localstatedir}/lib/mysql
-
 # Home directory of mysql user should be same for all packages that create it
 %global mysqluserhome /var/lib/mysql
 
 # Make long macros shorter
 %global sameevr   %{epoch}:%{version}-%{release}
-%global compatver 10.1
-%global bugfixver 38
 
 Name:             mariadb101u
-Version:          %{compatver}.%{bugfixver}
+Version:          10.1.40
 Release:          1%{?dist}
 Epoch:            1
 
 Summary:          A community developed branch of MySQL
 URL:              http://mariadb.org
-# Exceptions allow client libraries to be linked with most open source SW,
-# not only GPL code.  See README.mysql-license
+# Exceptions allow client libraries to be linked with most open source SW, not only GPL code.  See README.mysql-license
 License:          GPLv2 with exceptions and LGPLv2 and BSD
 
-#Source0:          https://downloads.mariadb.org/interstitial/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-Source0:          http://mirrors.syringanetworks.net/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+Source0:          https://mirrors.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
 Source2:          mysql_config_multilib.sh
 Source3:          my.cnf.in
 Source5:          README.mysql-cnf
@@ -147,20 +140,22 @@ Source60:         rh-skipped-tests-el7.list
 Source70:         clustercheck.sh
 Source71:         LICENSE.clustercheck
 
-# Comments for these patches are in the patch files
-# Patches common for more mysql-like packages
+#   Patch4: Red Hat distributions specific logrotate fix
+#   it would be big unexpected change, if we start shipping it now. Better wait for MariaDB 10.2
 Patch4:           %{pkgnamepatch}-logrotate.patch
+#   Patch7: add to the CMake file all files where we want macros to be expanded
 Patch7:           %{pkgnamepatch}-scripts.patch
+#   Patch9: pre-configure to comply with guidelines
 Patch9:           %{pkgnamepatch}-ownsetup.patch
+#   Patch13: patch of test of ssl cypher unsupported in Fedora
 Patch13:          %{pkgnamepatch}-ssl-cypher.patch
 
-# Patches specific for this mysql package
+#   Patch37: don't create a test DB: https://jira.mariadb.org/browse/MDEV-12645
 Patch37:          %{pkgnamepatch}-notestdb.patch
-
-Patch100:         %{pkgnamepatch}-remove-sysusers-tmpfiles.patch
 
 # Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
 BuildRequires:    %{cmake_name} >= 3.3.0
+BuildRequires:    gcc-c++
 BuildRequires:    libaio-devel
 BuildRequires:    readline-devel
 BuildRequires:    ncurses-devel
@@ -169,12 +164,13 @@ BuildRequires:    zlib-devel
 BuildRequires:    multilib-rpm-config
 BuildRequires:    krb5-devel
 BuildRequires:    selinux-policy-devel
+# Bison SQL parser
+BuildRequires:    bison bison-devel
 %{?with_init_systemd:BuildRequires: systemd systemd-devel}
 # Jemalloc
 BuildRequires:    jemalloc-devel
 # Cracklib plugin
-BuildRequires:    cracklib-devel
-BuildRequires:    cracklib-dicts
+BuildRequires:    cracklib-dicts cracklib-devel
 # auth_pam.so plugin will be build if pam-devel is installed
 BuildRequires:    pam-devel
 %{?with_pcre:BuildRequires: pcre-devel >= 8.35}
@@ -620,17 +616,16 @@ MariaDB is a community developed branch of MySQL.
 %patch9 -p1
 %patch13 -p1
 %patch37 -p1
-%patch100 -p1
 
 # workaround for upstream bug #56342
 rm mysql-test/t/ssl_8k_key-master.opt
 
 # generate a list of tests that fail, but are not disabled by upstream
-cat %{SOURCE50} | tee -a mysql-test/rh-skipped-tests.list
+cat %{SOURCE50} | tee -a mysql-test/unstable-tests
 
 # disable some tests failing on different architectures
 %ifarch %{arm} aarch64
-cat %{SOURCE51} | tee -a mysql-test/rh-skipped-tests.list
+cat %{SOURCE51} | tee -a mysql-test/unstable-tests
 %endif
 
 %if 0%{?rhel} && 0%{?rhel} <= 7
@@ -640,6 +635,9 @@ cat %{SOURCE60} | tee -a mysql-test/rh-skipped-tests.list
 cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE18} %{SOURCE19} \
    %{SOURCE70} scripts
+
+# Remove python scripts remains from tokudb upstream (those files are not used anyway)
+rm -r storage/tokudb/mysql-test/tokudb/t/*.py
 
 
 %build
@@ -657,13 +655,12 @@ cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} \
 CFLAGS="%{optflags} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE"
 # force PIC mode so that we can build libmysqld.so
 CFLAGS="$CFLAGS -fPIC"
-# gcc seems to have some bugs on sparc as of 4.4.1, back off optimization
-# submitted as bz #529298
+# gcc seems to have some bugs on sparc as of 4.4.1, back off optimization; rhbz#529298
+# Note: sparc = s390
 %ifarch sparc sparcv9 sparc64
 CFLAGS=`echo $CFLAGS| sed -e "s|-O2|-O1|g" `
 %endif
-# significant performance gains can be achieved by compiling with -O3 optimization
-# rhbz#1051069
+# significant performance gains can be achieved by compiling with -O3 optimization; rhbz#1051069
 %ifarch ppc64
 CFLAGS=`echo $CFLAGS| sed -e "s|-O2|-O3|g" `
 %endif
@@ -712,15 +709,15 @@ export LDFLAGS
          -DWITH_READLINE=ON \
          -DWITH_SSL=system \
          -DWITH_ZLIB=system \
-	 -DWITH_MARIABACKUP=no \
+         -DWITH_MARIABACKUP=no \
 %{?with_pcre: -DWITH_PCRE=system}\
          -DWITH_JEMALLOC=system \
-%{!?with_tokudb: -DWITHOUT_TOKUDB=ON}\
-%{!?with_mroonga: -DWITHOUT_MROONGA=ON}\
-%{!?with_oqgraph: -DWITHOUT_OQGRAPH=ON}\
+%{!?with_tokudb: -DWITHOUT_TOKUDB=ON} \
+%{!?with_mroonga: -DWITHOUT_MROONGA=ON} \
+%{!?with_oqgraph: -DWITHOUT_OQGRAPH=ON} \
          -DTMPDIR=/var/tmp \
-%{?with_debug: -DCMAKE_BUILD_TYPE=Debug}\
-%{?_hardened_build:-DWITH_MYSQLD_LDFLAGS="-pie -Wl,-z,relro,-z,now"}
+%{?with_debug: -DCMAKE_BUILD_TYPE=Debug} \
+%{?_hardened_build: -DWITH_MYSQLD_LDFLAGS="-pie -Wl,-z,relro,-z,now"}
 
 make %{?_smp_mflags} VERBOSE=1
 
@@ -760,7 +757,8 @@ install -p -m 0755 scripts/mysql_config_multilib %{buildroot}%{_bindir}/mysql_co
 ln -s mysql_config.1 %{buildroot}%{_mandir}/man1/mysql_config-%{__isa_bits}.1
 fi
 
-# Upstream install this into arch-independent directory, TODO: report
+# Upstream install this into arch-independent directory
+# TODO: report to upstream
 mkdir -p %{buildroot}/%{_libdir}/pkgconfig
 mv %{buildroot}/%{_datadir}/pkgconfig/*.pc %{buildroot}/%{_libdir}/pkgconfig
 
@@ -770,6 +768,7 @@ install -p -m 644 Docs/INFO_SRC %{buildroot}%{_libdir}/mysql/
 install -p -m 644 Docs/INFO_BIN %{buildroot}%{_libdir}/mysql/
 rm -r %{buildroot}%{_pkgdocdir}/MariaDB-server-%{version}/
 
+# Logfile creation
 mkdir -p %{buildroot}%{logfiledir}
 chmod 0750 %{buildroot}%{logfiledir}
 touch %{buildroot}%{logfile}
@@ -787,13 +786,23 @@ rm %{buildroot}%{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 rm %{buildroot}%{_sysconfdir}/my.cnf
 %endif
 
-# use different config file name for each variant of server
+# use different config file name for each variant of server (mariadb / mysql)
 mv %{buildroot}%{_sysconfdir}/my.cnf.d/server.cnf %{buildroot}%{_sysconfdir}/my.cnf.d/%{pkg_name}-server.cnf
+
+%if 0%{?fedora} >= 21 || 0%{?rhel} >= 8
+# Rename sysusers and tmpfiles config files, they should be named after the software they belong to
+mv %{buildroot}%{_sysusersdir}/sysusers.conf %{buildroot}%{_sysusersdir}/%{daemon_name}.conf
+%else
+rm %{buildroot}%{_sysusersdir}/sysusers.conf
+%endif
 
 # install systemd unit files and scripts for handling server startup
 %if %{with init_systemd}
 install -D -p -m 644 scripts/mysql.service %{buildroot}%{_unitdir}/%{daemon_name}.service
 install -D -p -m 644 scripts/mysql@.service %{buildroot}%{_unitdir}/%{daemon_name}@.service
+# Remove the upstream version
+rm %{buildroot}%{_tmpfilesdir}/tmpfiles.conf
+# Install downstream version
 install -D -p -m 0644 scripts/mysql.tmpfiles.d %{buildroot}%{_tmpfilesdir}/%{daemon_name}.conf
 %if 0%{?mysqld_pid_dir:1}
 %if 0%{?rhel} == 6
@@ -837,8 +846,11 @@ rm %{buildroot}%{_datadir}/%{pkg_name}/binary-configure
 rm %{buildroot}%{_datadir}/%{pkg_name}/magic
 rm %{buildroot}%{_datadir}/%{pkg_name}/mysql.server
 rm %{buildroot}%{_datadir}/%{pkg_name}/mysqld_multi.server
+rm %{buildroot}%{_mandir}/man1/mariabackup.1*
+rm %{buildroot}%{_mandir}/man1/mbstream.1*
 rm %{buildroot}%{_mandir}/man1/mysql-stress-test.pl.1*
 rm %{buildroot}%{_mandir}/man1/mysql-test-run.pl.1*
+rm %{buildroot}%{_mandir}/man1/mysql_embedded.1*
 rm %{buildroot}%{_bindir}/mytop
 
 # put logrotate script where it needs to be
@@ -928,6 +940,12 @@ rm %{buildroot}%{_sysconfdir}/my.cnf.d/connect.cnf
 rm %{buildroot}%{_sysconfdir}/my.cnf.d/oqgraph.cnf
 %endif
 
+%if %{without tokudb}
+# because upstream ships manpages for tokudb even on architectures that tokudb doesn't support
+rm %{buildroot}%{_mandir}/man1/tokuftdump.1*
+rm %{buildroot}%{_mandir}/man1/tokuft_logprint.1*
+%endif
+
 %if %{without config}
 rm %{buildroot}%{_sysconfdir}/my.cnf
 rm %{buildroot}%{_sysconfdir}/my.cnf.d/mysql-clients.cnf
@@ -983,7 +1001,7 @@ export MTR_BUILD_THREAD=%{__isa_bits}
 %if %{ignore_testsuite_result}
     || :
 %else
-    --skip-test-list=rh-skipped-tests.list
+    --skip-test-list=unstable-tests
 %endif
 )
 %endif
@@ -1173,18 +1191,14 @@ fi
 %{_bindir}/resolve_stack_dump
 %{_bindir}/resolveip
 %{_bindir}/wsrep_sst_common
+%{_bindir}/wsrep_sst_mariabackup
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
 %{_bindir}/wsrep_sst_rsync_wan
 %{_bindir}/wsrep_sst_xtrabackup
 %{_bindir}/wsrep_sst_xtrabackup-v2
-%{_bindir}/wsrep_sst_mariabackup
-%if %{with tokudb}
-%{_bindir}/tokuftdump
-%{_bindir}/tokuft_logprint
-%{_mandir}/man1/tokuftdump.1*
-%{_mandir}/man1/tokuft_logdump.1*
-%endif
+%{?with_tokudb:%{_bindir}/tokuftdump}
+%{?with_tokudb:%{_bindir}/tokuft_logprint}
 
 %config(noreplace) %{_sysconfdir}/my.cnf.d/%{pkg_name}-server.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/auth_gssapi.cnf
@@ -1212,6 +1226,7 @@ fi
 %{_mandir}/man1/aria_ftdump.1*
 %{_mandir}/man1/aria_pack.1*
 %{_mandir}/man1/aria_read_log.1*
+%{_mandir}/man1/mariadb-service-convert.1*
 %{_mandir}/man1/myisamchk.1*
 %{_mandir}/man1/myisamlog.1*
 %{_mandir}/man1/myisampack.1*
@@ -1219,22 +1234,25 @@ fi
 %{_mandir}/man1/mysql.server.1*
 %{_mandir}/man1/mysql_install_db.1*
 %{_mandir}/man1/mysql_secure_installation.1*
+%{_mandir}/man1/mysql_tzinfo_to_sql.1*
 %{_mandir}/man1/mysql_upgrade.1*
 %{_mandir}/man1/mysqlbug.1*
 %{_mandir}/man1/mysqld_safe.1*
 %{_mandir}/man1/mysqld_safe_helper.1*
 %{_mandir}/man1/innochecksum.1*
 %{_mandir}/man1/replace.1*
-%{_mandir}/man1/resolve_stack_dump.1*
 %{_mandir}/man1/resolveip.1*
-%{_mandir}/man1/mysql_tzinfo_to_sql.1*
+%{_mandir}/man1/resolve_stack_dump.1*
 %{_mandir}/man8/mysqld.8*
-%{_mandir}/man1/mariadb-service-convert.1*
+%{?with_tokudb:%{_mandir}/man1/tokuftdump.1*}
+%{?with_tokudb:%{_mandir}/man1/tokuft_logprint.1*}
 %{_mandir}/man1/wsrep_sst_common.1*
+%{_mandir}/man1/wsrep_sst_mariabackup.1*
 %{_mandir}/man1/wsrep_sst_mysqldump.1*
 %{_mandir}/man1/wsrep_sst_rsync.1*
-%{_mandir}/man1/wsrep_sst_xtrabackup-v2.1*
+%{_mandir}/man1/wsrep_sst_rsync_wan.1*
 %{_mandir}/man1/wsrep_sst_xtrabackup.1*
+%{_mandir}/man1/wsrep_sst_xtrabackup-v2.1*
 
 %{_datadir}/%{pkg_name}/fill_help_tables.sql
 %{_datadir}/%{pkg_name}/install_spider.sql
@@ -1278,6 +1296,10 @@ fi
 %attr(0750,mysql,mysql) %dir %{logfiledir}
 %attr(0640,mysql,mysql) %config %ghost %verify(not md5 size mtime) %{logfile}
 %config(noreplace) %{logrotateddir}/%{daemon_name}
+
+%if 0%{?fedora} >= 21 || 0%{?rhel} >= 8
+%{_sysusersdir}/%{daemon_name}.conf
+%endif
 
 %if %{with oqgraph}
 %files oqgraph-engine
@@ -1356,6 +1378,9 @@ fi
 
 
 %changelog
+* Thu Jul 25 2019 Carl George <carl@george.computer> - 1:10.1.40-1
+- Latest upstream
+
 * Wed Apr 24 2019 evitalis <evitalis@users.noreply.github.com> - 1:10.1.38-1.ius
 - Latest upstream
 
