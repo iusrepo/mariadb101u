@@ -83,14 +83,6 @@
 %bcond_with pcre
 %endif
 
-# Use cmake3 from EPEL to avoid this bug:
-# http://public.kitware.com/Bug/view.php?id=14782
-%if 0%{?rhel} && 0%{?rhel} <= 7
-%global cmake_name cmake3
-%else
-%global cmake_name cmake
-%endif
-
 # We define some system's well known locations here so we can use them easily
 # later when building to another location (like SCL)
 %global logrotateddir %{_sysconfdir}/logrotate.d
@@ -153,9 +145,7 @@ Patch13:          %{pkgnamepatch}-ssl-cypher.patch
 #   Patch37: don't create a test DB: https://jira.mariadb.org/browse/MDEV-12645
 Patch37:          %{pkgnamepatch}-notestdb.patch
 
-# Techincally only cmake 2.6 is required, but 3.3.0 enables all features.
-BuildRequires:    %{cmake_name} >= 3.3.0
-BuildRequires:    gcc-c++
+BuildRequires:    cmake gcc-c++
 BuildRequires:    libaio-devel
 BuildRequires:    readline-devel
 BuildRequires:    ncurses-devel
@@ -617,6 +607,10 @@ MariaDB is a community developed branch of MySQL.
 %patch13 -p1
 %patch37 -p1
 
+sed -i -e 's/2.8.7/2.6.4/g' cmake/cpack_rpm.cmake
+# workaround to deploy mariadb@.service on EL7
+sed -i 's/IF(NOT CMAKE_VERSION VERSION_LESS 3.3.0 OR NOT RPM)/IF(TRUE)/g' support-files/CMakeLists.txt
+
 # workaround for upstream bug #56342
 rm mysql-test/t/ssl_8k_key-master.opt
 
@@ -675,7 +669,7 @@ export LDFLAGS
 
 # The INSTALL_xxx macros have to be specified relative to CMAKE_INSTALL_PREFIX
 # so we can't use %%{_datadir} and so forth here.
-%{expand:%%%cmake_name} . \
+%cmake . \
          -DBUILD_CONFIG=mysql_release \
          -DFEATURE_SET="community" \
          -DINSTALL_LAYOUT=RPM \
@@ -1380,6 +1374,7 @@ fi
 %changelog
 * Thu Jul 25 2019 Carl George <carl@george.computer> - 1:10.1.40-1
 - Latest upstream
+- Build using stock cmake
 
 * Wed Apr 24 2019 evitalis <evitalis@users.noreply.github.com> - 1:10.1.38-1.ius
 - Latest upstream
