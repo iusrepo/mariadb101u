@@ -13,6 +13,13 @@
 # Use Full RELRO for all binaries (RHBZ#1092548)
 %global _hardened_build 1
 
+# In f20+ use unversioned docdirs, otherwise the old versioned one
+%if 0%{?fedora} >= 20 || 0%{?rhel} >= 8
+%global _pkgdocdirname %{name}
+%else
+%global _pkgdocdirname %{name}-%{version}
+%endif
+
 # By default, patch(1) creates backup files when chunks apply with offsets.
 # Turn that off to ensure such files don't get included in RPMs (cf bz#884755).
 %global _default_patch_flags --no-backup-if-mismatch
@@ -682,8 +689,8 @@ export LDFLAGS
          -DCMAKE_INSTALL_PREFIX="%{_prefix}" \
          -DINSTALL_SYSCONFDIR="%{_sysconfdir}" \
          -DINSTALL_SYSCONF2DIR="%{_sysconfdir}/my.cnf.d" \
-         -DINSTALL_DOCDIR="share/doc/%{name}%{?rhel:-%{version}}" \
-         -DINSTALL_DOCREADMEDIR="share/doc/%{name}%{?rhel:-%{version}}" \
+         -DINSTALL_DOCDIR="share/doc/%{_pkgdocdirname}" \
+         -DINSTALL_DOCREADMEDIR="share/doc/%{_pkgdocdirname}" \
          -DINSTALL_INCLUDEDIR=include/mysql \
          -DINSTALL_INFODIR=share/info \
          -DINSTALL_LIBDIR="%{_lib}/mysql" \
