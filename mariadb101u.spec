@@ -997,12 +997,12 @@ export MTR_BUILD_THREAD=%{__isa_bits}
 
 
 %if %{with clibrary}
-%post libs -p /sbin/ldconfig
+%ldconfig_scriptlets libs
 %endif
 
 
 %if %{with embedded}
-%post embedded -p /sbin/ldconfig
+%ldconfig_scriptlets embedded
 %endif
 
 
@@ -1026,16 +1026,6 @@ if [ $1 = 0 ]; then
     /sbin/service %{daemon_name} stop >/dev/null 2>&1
     /sbin/chkconfig --del %{daemon_name}
 fi
-%endif
-
-
-%if %{with clibrary}
-%postun libs -p /sbin/ldconfig
-%endif
-
-
-%if %{with embedded}
-%postun embedded -p /sbin/ldconfig
 %endif
 
 
