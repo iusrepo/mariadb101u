@@ -84,10 +84,11 @@
 
 # MariaDB 10.0 and later requires pcre >= 8.35, otherwise we need to use
 # the bundled library, since the package cannot be build with older version
-%if 0%{?fedora} >= 21
-%bcond_without pcre
+%if 0%{?fedora} || 0%{?rhel} > 7
+%bcond_without unbundled_pcre
 %else
-%bcond_with pcre
+%bcond_with unbundled_pcre
+%global pcre_bundled_version 8.43
 %endif
 
 # We define some system's well known locations here so we can use them easily
@@ -170,7 +171,9 @@ BuildRequires:    jemalloc-devel
 BuildRequires:    cracklib-dicts cracklib-devel
 # auth_pam.so plugin will be build if pam-devel is installed
 BuildRequires:    pam-devel
-%{?with_pcre:BuildRequires: pcre-devel >= 8.35}
+# use either new enough version of pcre or provide bundles(pcre)
+%{?with_unbundled_pcre:BuildRequires: pcre-devel >= 8.35 pkgconf}
+%{!?with_unbundled_pcre:Provides: bundled(pcre) = %{pcre_bundled_version}}
 # Few utilities needs Perl
 BuildRequires:    perl
 # Tests requires time and ps and some perl modules
@@ -637,6 +640,26 @@ cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} \
    %{SOURCE14} %{SOURCE15} %{SOURCE16} %{SOURCE18} %{SOURCE19} \
    %{SOURCE70} scripts
 
+# Get version of PCRE, that upstream use
+pcre_maj=`grep '^m4_define(pcre_major' pcre/configure.ac | sed -r 's/^m4_define\(pcre_major, \[([0-9]+)\]\)/\1/'`
+pcre_min=`grep '^m4_define(pcre_minor' pcre/configure.ac | sed -r 's/^m4_define\(pcre_minor, \[([0-9]+)\]\)/\1/'`
+
+%if %{without unbundled_pcre}
+# Check if the PCRE version in macro 'pcre_bundled_version', used in Provides: bundled(...), is the same version as upstream actually bundles
+if [ %{pcre_bundled_version} != "$pcre_maj.$pcre_min" ]
+then
+  echo "\n Error: Bundled PCRE version is not correct. \n\tBundled version number:%{pcre_bundled_version} \n\tUpstream version number: $pcre_maj.$pcre_min\n"
+  exit 1
+fi
+%else
+# Check if the PCRE version that upstream use, is the same as the one present in system
+pcre_system_version=`pkgconf %{_libdir}/pkgconfig/libpcre.pc --modversion 2>/dev/null `
+if [ "$pcre_system_version" != "$pcre_maj.$pcre_min" ]
+then
+  echo "\n Warning: Error: Bundled PCRE version is not correct. \n\tSystem version number:$pcre_system_version \n\tUpstream version number: $pcre_maj.$pcre_min\n"
+fi
+%endif # PCRE
+
 # Remove python scripts remains from tokudb upstream (those files are not used anyway)
 rm -r storage/tokudb/mysql-test/tokudb/t/*.py
 
@@ -711,7 +734,7 @@ export LDFLAGS
          -DWITH_SSL=system \
          -DWITH_ZLIB=system \
          -DWITH_MARIABACKUP=no \
-%{?with_pcre: -DWITH_PCRE=system}\
+%{?with_unbundled_pcre: -DWITH_PCRE=system} \
          -DWITH_JEMALLOC=system \
 %{!?with_tokudb: -DWITHOUT_TOKUDB=ON} \
 %{!?with_mroonga: -DWITHOUT_MROONGA=ON} \
