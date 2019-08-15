@@ -111,7 +111,7 @@
 %global sameevr   %{epoch}:%{version}-%{release}
 
 Name:             mariadb101u
-Version:          10.1.40
+Version:          10.1.41
 Release:          1%{?dist}
 Epoch:            1
 
@@ -1402,6 +1402,9 @@ fi
 
 
 %changelog
+* Thu Aug 15 2019 Carl George <carl@george.computer> - 1:10.1.41-1
+- Latest upstream
+
 * Thu Jul 25 2019 Carl George <carl@george.computer> - 1:10.1.40-1
 - Latest upstream
 - Build using stock cmake
